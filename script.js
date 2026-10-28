@@ -23,5 +23,20 @@ function updateClock() {
   }
 }
 
+const filesToggle = document.querySelector('.files-toggle');
+const filesWindow = document.getElementById('files-window');
+
+if (filesToggle && filesWindow) {
+  const setFilesWindowOpen = (isOpen) => {
+    filesWindow.classList.toggle('is-open', isOpen);
+    filesToggle.setAttribute('aria-expanded', String(isOpen));
+  };
+
+  filesToggle.addEventListener('click', () => {
+    const isOpen = !filesWindow.classList.contains('is-open');
+    setFilesWindowOpen(isOpen);
+  });
+}
+
 updateClock();
 setInterval(updateClock, 30000);
