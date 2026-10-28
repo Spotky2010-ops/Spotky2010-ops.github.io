@@ -115,8 +115,15 @@
           <span class="section-pill">3 folders</span>
         </div>
 
+        <div class="files-tabs" aria-label="Files tabs">
+          <button class="files-tab active" data-tab="all" type="button">All</button>
+          <button class="files-tab" data-tab="cat" type="button">Cat</button>
+          <button class="files-tab" data-tab="dog" type="button">Dog</button>
+          <button class="files-tab" data-tab="robot" type="button">Robot</button>
+        </div>
+
         <div class="folder-grid">
-          <article class="folder-card cat-folder">
+          <article class="folder-card" data-category="cat">
             <div class="folder-top">
               <div class="folder-icon">📁</div>
               <span>Cat</span>
@@ -132,7 +139,7 @@
             <div class="folder-footer">6 photos</div>
           </article>
 
-          <article class="folder-card dog-folder">
+          <article class="folder-card" data-category="dog">
             <div class="folder-top">
               <div class="folder-icon">📁</div>
               <span>Dog</span>
@@ -148,7 +155,7 @@
             <div class="folder-footer">6 photos</div>
           </article>
 
-          <article class="folder-card robot-folder">
+          <article class="folder-card" data-category="robot">
             <div class="folder-top">
               <div class="folder-icon">📁</div>
               <span>Roborock</span>
