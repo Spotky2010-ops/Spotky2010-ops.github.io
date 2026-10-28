@@ -38,5 +38,85 @@ if (filesToggle && filesWindow) {
   });
 }
 
+const powerButton = document.getElementById('powerButton');
+const powerOverlay = document.getElementById('powerOverlay');
+const closePowerMenu = document.getElementById('closePowerMenu');
+const confirmPowerAction = document.getElementById('confirmPowerAction');
+const blackoutScreen = document.getElementById('blackoutScreen');
+const powerOptions = document.querySelectorAll('.power-option');
+
+let selectedPowerAction = 'shutdown';
+
+function setPowerAction(action) {
+  selectedPowerAction = action;
+  powerOptions.forEach((option) => {
+    option.classList.toggle('selected', option.dataset.action === action);
+  });
+}
+
+function openPowerMenu() {
+  if (!powerOverlay) return;
+  powerOverlay.classList.add('is-open');
+  powerOverlay.setAttribute('aria-hidden', 'false');
+}
+
+function closePowerMenuDialog() {
+  if (!powerOverlay) return;
+  powerOverlay.classList.remove('is-open');
+  powerOverlay.setAttribute('aria-hidden', 'true');
+}
+
+function triggerPowerAction() {
+  if (!blackoutScreen) return;
+
+  const labelMap = {
+    shutdown: 'Shutting down...',
+    sleep: 'Sleeping...',
+    restart: 'Restarting...'
+  };
+
+  const label = labelMap[selectedPowerAction] || 'Shutting down...';
+  const blackoutText = blackoutScreen.querySelector('.shutdown-text');
+
+  if (blackoutText) {
+    blackoutText.textContent = label;
+  }
+
+  closePowerMenuDialog();
+  blackoutScreen.classList.add('is-visible');
+  blackoutScreen.setAttribute('aria-hidden', 'false');
+}
+
+if (powerButton) {
+  powerButton.addEventListener('click', openPowerMenu);
+}
+
+if (closePowerMenu) {
+  closePowerMenu.addEventListener('click', closePowerMenuDialog);
+}
+
+if (confirmPowerAction) {
+  confirmPowerAction.addEventListener('click', triggerPowerAction);
+}
+
+if (powerOverlay) {
+  powerOverlay.addEventListener('click', (event) => {
+    if (event.target === powerOverlay) {
+      closePowerMenuDialog();
+    }
+  });
+}
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && powerOverlay && powerOverlay.classList.contains('is-open')) {
+    closePowerMenuDialog();
+  }
+});
+
+powerOptions.forEach((option) => {
+  option.addEventListener('click', () => setPowerAction(option.dataset.action));
+});
+
+setPowerAction(selectedPowerAction);
 updateClock();
 setInterval(updateClock, 30000);
