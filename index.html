@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Window 12 Home</title>
+    <meta name="description" content="Windows-inspired home screen concept for Spotky2010-ops.github.io" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+
+    <div class="desktop-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-mark">W</div>
+          <div>
+            <div class="app-label">Window 12</div>
+            <div class="brand-subtitle">Home</div>
+          </div>
+        </div>
+
+        <div class="system-meta">
+          <span>Wi‑Fi</span>
+          <span>Battery 92%</span>
+          <span>10:24</span>
+        </div>
+      </header>
+
+      <main class="home-layout">
+        <aside class="glass panel side-panel left-panel">
+          <div class="widget-label">Today</div>
+          <div class="weather-box">
+            <div class="weather-icon">☀</div>
+            <div>
+              <div class="temp">24°</div>
+              <div class="condition">Clear</div>
+            </div>
+          </div>
+
+          <div class="mini-stats">
+            <div>
+              <span class="metric">14</span>
+              <span>tasks</span>
+            </div>
+            <div>
+              <span class="metric">6</span>
+              <span>alerts</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="hero-panel glass">
+          <div class="greeting" id="greeting">Good evening</div>
+          <h1 id="time">08:34</h1>
+          <div class="date-row" id="date">Tuesday, October 28</div>
+
+          <label class="search-bar" aria-label="Search">
+            <span class="search-icon">⌕</span>
+            <input type="text" value="Search apps, files, settings" aria-label="Search apps" />
+          </label>
+        </section>
+
+        <aside class="glass panel side-panel right-panel">
+          <div class="widget-label">Focus</div>
+          <ul class="focus-list">
+            <li><span class="dot blue"></span> Design review</li>
+            <li><span class="dot green"></span> Build sprint</li>
+            <li><span class="dot pink"></span> Team sync</li>
+          </ul>
+        </aside>
+      </main>
+
+      <section class="apps-section">
+        <div class="apps-grid">
+          <button class="app-tile tile-blue">
+            <span class="tile-icon">✉</span>
+            <span>Mail</span>
+          </button>
+          <button class="app-tile tile-cyan">
+            <span class="tile-icon">▣</span>
+            <span>Files</span>
+          </button>
+          <button class="app-tile tile-violet">
+            <span class="tile-icon">⌘</span>
+            <span>Store</span>
+          </button>
+          <button class="app-tile tile-green">
+            <span class="tile-icon">⌬</span>
+            <span>Terminal</span>
+          </button>
+          <button class="app-tile tile-orange">
+            <span class="tile-icon">⚙</span>
+            <span>Settings</span>
+          </button>
+          <button class="app-tile tile-pink">
+            <span class="tile-icon">♫</span>
+            <span>Music</span>
+          </button>
+          <button class="app-tile tile-red">
+            <span class="tile-icon">◌</span>
+            <span>Photos</span>
+          </button>
+          <button class="app-tile tile-slate">
+            <span class="tile-icon">⌂</span>
+            <span>Home</span>
+          </button>
+        </div>
+      </section>
+
+      <nav class="dock glass" aria-label="Dock">
+        <button class="dock-item active" aria-label="Home">
+          <span>⌂</span>
+        </button>
+        <button class="dock-item" aria-label="Explorer">
+          <span>▣</span>
+        </button>
+        <button class="dock-item" aria-label="Browser">
+          <span>◎</span>
+        </button>
+        <button class="dock-item" aria-label="Music">
+          <span>♫</span>
+        </button>
+        <button class="dock-item" aria-label="Settings">
+          <span>⚙</span>
+        </button>
+      </nav>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
