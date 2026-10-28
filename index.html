@@ -182,10 +182,46 @@
         <button class="dock-item" aria-label="Settings">
           <span>⚙</span>
         </button>
-        <button id="powerButton" class="dock-item power-button" aria-label="Power off" title="Power off">
+        <button id="powerButton" class="dock-item power-button" aria-label="Power options" title="Power options">
           <span>⏻</span>
         </button>
       </nav>
+    </div>
+
+    <div class="power-overlay" id="powerOverlay" aria-hidden="true">
+      <div class="power-panel" role="dialog" aria-modal="true" aria-labelledby="powerTitle">
+        <div class="power-header">
+          <div class="power-badge">⏻</div>
+          <div>
+            <div class="power-kicker">Power</div>
+            <h2 id="powerTitle">Choose an action</h2>
+          </div>
+        </div>
+
+        <div class="power-actions">
+          <button class="power-option primary" data-action="shutdown">
+            <span class="option-icon">⏻</span>
+            <span>Shut down</span>
+          </button>
+          <button class="power-option" data-action="sleep">
+            <span class="option-icon">☾</span>
+            <span>Sleep</span>
+          </button>
+          <button class="power-option" data-action="restart">
+            <span class="option-icon">↻</span>
+            <span>Restart</span>
+          </button>
+        </div>
+
+        <div class="power-footer">
+          <button class="action-btn secondary" id="closePowerMenu">Cancel</button>
+          <button class="action-btn primary" id="confirmPowerAction">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="blackout-screen" id="blackoutScreen" aria-hidden="true">
+      <div class="shutdown-text">Shutting down...</div>
     </div>
 
     <script src="script.js"></script>
