@@ -1,0 +1,129 @@
+<button class="app-tile tile-cyan files-toggle" type="button" aria-expanded="true" aria-controls="files-window">
+  <span class="tile-icon">▣</span>
+  <span>Files</span>
+</button>
+
+<section class="window-stack" aria-label="Open application windows">
+  <article class="desktop-window files-window is-open" id="files-window" aria-label="Files app window">
+    <header class="window-header">
+      <div class="window-title-group">
+        <div class="window-chrome">
+          <span class="traffic-light red"></span>
+          <span class="traffic-light yellow"></span>
+          <span class="traffic-light green"></span>
+        </div>
+        <span class="window-title">Files</span>
+      </div>
+
+      <div class="window-actions" aria-label="Window controls">
+        <span class="window-action">—</span>
+        <span class="window-action">□</span>
+        <span class="window-action close">×</span>
+      </div>
+    </header>
+
+    <div class="window-addressbar">
+      <span class="address-label">Address</span>
+      <div class="address-box">
+        <span class="address-path">Pictures / Roborock</span>
+      </div>
+      <button class="address-button">Go</button>
+    </div>
+
+    <div class="window-body">
+      <aside class="window-sidebar">
+        <div class="nav-panel">
+          <div class="nav-label">Favorites</div>
+          <ul class="nav-list">
+            <li class="nav-item">Documents</li>
+            <li class="nav-item">Downloads</li>
+            <li class="nav-item active">Pictures</li>
+          </ul>
+        </div>
+
+        <div class="nav-panel">
+          <div class="nav-label">Collections</div>
+          <ul class="nav-list">
+            <li class="nav-item">Cat</li>
+            <li class="nav-item">Dog</li>
+            <li class="nav-item">Roborock</li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="window-main">
+        <section class="content-pane">
+          <div class="toolbar">
+            <span class="crumb">Home</span>
+            <span class="crumb slash">/</span>
+            <span class="crumb">Pictures</span>
+            <span class="crumb slash">/</span>
+            <span class="crumb current">Roborock</span>
+          </div>
+
+          <div class="file-list">
+            <div class="file-row file-header">
+              <span>Name</span>
+              <span>Type</span>
+              <span>Modified</span>
+            </div>
+
+            <div class="file-row">
+              <span>20260504-164607.jpg</span>
+              <span>Image</span>
+              <span>Today</span>
+            </div>
+            <div class="file-row">
+              <span>Floor map.png</span>
+              <span>Image</span>
+              <span>Today</span>
+            </div>
+            <div class="file-row">
+              <span>Robot cleaning notes.txt</span>
+              <span>Text</span>
+              <span>Yesterday</span>
+            </div>
+            <div class="file-row">
+              <span>Battery log.csv</span>
+              <span>Spreadsheet</span>
+              <span>2 days ago</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="metadata-pane">
+          <div class="meta-card">
+            <div class="meta-header">Folder details</div>
+            <div class="meta-row">
+              <span class="meta-label">Items</span>
+              <span>24 files</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Type</span>
+              <span>Folder</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Location</span>
+              <span>Pictures / Roborock</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Size</span>
+              <span>1.8 GB</span>
+            </div>
+          </div>
+
+          <div class="meta-card small">
+            <div class="meta-header">Quick actions</div>
+            <ul class="quick-actions">
+              <li>View thumbnails</li>
+              <li>Sort by date</li>
+              <li>Open folder</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div class="resize-handle" aria-hidden="true"></div>
+  </article>
+</section>
