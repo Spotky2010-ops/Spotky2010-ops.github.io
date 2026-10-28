@@ -38,6 +38,28 @@ if (filesToggle && filesWindow) {
   });
 }
 
+const tabs = document.querySelectorAll('.files-tab');
+const folderCards = document.querySelectorAll('.folder-card');
+
+if (tabs.length && folderCards.length) {
+  const setActiveTab = (tabName) => {
+    tabs.forEach((tab) => {
+      const isActive = tab.dataset.tab === tabName;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', String(isActive));
+    });
+
+    folderCards.forEach((card) => {
+      const matches = tabName === 'all' || card.dataset.category === tabName;
+      card.style.display = matches ? '' : 'none';
+    });
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => setActiveTab(tab.dataset.tab));
+  });
+}
+
 const powerButton = document.getElementById('powerButton');
 const powerOverlay = document.getElementById('powerOverlay');
 const closePowerMenu = document.getElementById('closePowerMenu');
