@@ -1,0 +1,83 @@
+<!-- Replace the existing Files app tile -->
+<button class="app-tile tile-cyan files-toggle" type="button" aria-expanded="true" aria-controls="files-window">
+  <span class="tile-icon">▣</span>
+  <span>Files</span>
+</button>
+
+<!-- Insert this block before the Files gallery -->
+<section class="window-stack" aria-label="Open application windows">
+  <article class="desktop-window files-window is-open" id="files-window" aria-label="Files app window">
+    <header class="window-header">
+      <div class="window-title-group">
+        <span class="traffic-light red"></span>
+        <span class="traffic-light yellow"></span>
+        <span class="traffic-light green"></span>
+        <span class="window-title">Files</span>
+      </div>
+
+      <div class="window-actions" aria-label="Window controls">
+        <span>—</span>
+        <span>□</span>
+        <span>×</span>
+      </div>
+    </header>
+
+    <div class="window-body">
+      <aside class="window-sidebar">
+        <div class="nav-group">
+          <p>Favorites</p>
+          <ul>
+            <li class="nav-item active">Documents</li>
+            <li class="nav-item">Downloads</li>
+            <li class="nav-item">Pictures</li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <p>Collections</p>
+          <ul>
+            <li class="nav-item">Cat</li>
+            <li class="nav-item">Dog</li>
+            <li class="nav-item">Roborock</li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="window-content">
+        <div class="toolbar">
+          <span class="crumb">Home</span>
+          <span class="crumb">/</span>
+          <span class="crumb current">Pictures</span>
+        </div>
+
+        <div class="file-table">
+          <div class="file-row file-header">
+            <span>Name</span>
+            <span>Type</span>
+            <span>Modified</span>
+          </div>
+          <div class="file-row">
+            <span>Cat</span>
+            <span>Folder</span>
+            <span>Today</span>
+          </div>
+          <div class="file-row">
+            <span>Dog</span>
+            <span>Folder</span>
+            <span>Today</span>
+          </div>
+          <div class="file-row">
+            <span>Roborock</span>
+            <span>Folder</span>
+            <span>Yesterday</span>
+          </div>
+          <div class="file-row">
+            <span>Project notes.txt</span>
+            <span>Text</span>
+            <span>2 min ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
