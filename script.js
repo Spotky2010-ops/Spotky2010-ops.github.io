@@ -145,9 +145,51 @@ function initPowerMenu() {
   setPowerAction(selectedPowerAction);
 }
 
+function initImageLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImage = document.getElementById('lightboxImage');
+  const closeButton = document.getElementById('lightboxClose');
+  const photoItems = document.querySelectorAll('.thumb-photo');
+
+  if (!lightbox || !lightboxImage || !photoItems.length) return;
+
+  const openLightbox = (src) => {
+    lightboxImage.src = src;
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImage.src = '';
+  };
+
+  photoItems.forEach((item) => {
+    item.addEventListener('click', () => openLightbox(item.src));
+  });
+
+  if (closeButton) {
+    closeButton.addEventListener('click', closeLightbox);
+  }
+
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
+      closeLightbox();
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   updateClock();
   initFileTabs();
   initPowerMenu();
+  initImageLightbox();
   setInterval(updateClock, 30000);
 });
