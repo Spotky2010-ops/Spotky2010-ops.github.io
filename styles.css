@@ -1,4 +1,4 @@
-:root {
+.root {
   --bg: #07111f;
   --bg-2: #091d34;
   --panel: rgba(16, 25, 39, 0.72);
@@ -459,6 +459,16 @@ body {
   place-items: center;
   border-radius: 14px;
   font-size: 1.9rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+}
+
+.thumb-photo {
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  display: block;
+  border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.1);
   background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
 }
