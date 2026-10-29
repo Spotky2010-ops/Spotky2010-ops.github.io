@@ -45,6 +45,16 @@ function updateClock() {
   }
 }
 
+function syncSelectedState(buttons, selectedValue, keyName) {
+  buttons.forEach((button) => {
+    const isSelected = button.dataset[keyName] === selectedValue;
+    button.classList.toggle('selected', isSelected);
+    button.classList.toggle('active', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+    button.setAttribute('aria-selected', String(isSelected));
+  });
+}
+
 function applyTheme(themeName) {
   const theme = themeName === 'light' ? 'light' : 'dark';
   document.body.dataset.theme = theme;
@@ -53,7 +63,9 @@ function applyTheme(themeName) {
   themeButtons.forEach((button) => {
     const isSelected = button.dataset.theme === theme;
     button.classList.toggle('is-selected', isSelected);
+    button.classList.toggle('selected', isSelected);
     button.setAttribute('aria-pressed', String(isSelected));
+    button.setAttribute('aria-selected', String(isSelected));
   });
 
   try {
@@ -72,7 +84,9 @@ function applyAccent(accentName) {
   accentSwatches.forEach((button) => {
     const isActive = button.dataset.accent === validAccent;
     button.classList.toggle('active', isActive);
+    button.classList.toggle('selected', isActive);
     button.setAttribute('aria-pressed', String(isActive));
+    button.setAttribute('aria-selected', String(isActive));
   });
 
   const currentAccentLabel = document.getElementById('currentAccentLabel');
@@ -94,7 +108,9 @@ function applyWallpaper(wallpaperName) {
   document.querySelectorAll('.wallpaper-option').forEach((button) => {
     const isActive = button.dataset.wallpaper === wallpaper;
     button.classList.toggle('active', isActive);
+    button.classList.toggle('selected', isActive);
     button.setAttribute('aria-pressed', String(isActive));
+    button.setAttribute('aria-selected', String(isActive));
   });
 
   try {
@@ -112,7 +128,9 @@ function applyTransparency(value) {
     if (button.classList.contains('segment')) {
       const isActive = button.dataset.transparency === transparency;
       button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
       button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
     }
   });
 
@@ -131,7 +149,9 @@ function applyTaskbar(mode) {
     if (button.classList.contains('segment')) {
       const isActive = button.dataset.taskbar === taskbarMode;
       button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
       button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
     }
   });
 
@@ -151,7 +171,9 @@ function applyAccessibility(level) {
     if (button.classList.contains('segment')) {
       const isActive = button.dataset.accessibility === accessibility;
       button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
       button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
     }
   });
 
@@ -270,11 +292,13 @@ function initSettingsPanel() {
   };
 
   const setActiveSettingsTab = (tabName) => {
-    settingsTabs.forEach((tab) => {
+    settingsTabs.forEach((tab, index) => {
       const isActive = tab.dataset.settingsTab === tabName;
       tab.classList.toggle('active', isActive);
+      tab.classList.toggle('selected', isActive);
       tab.setAttribute('aria-selected', String(isActive));
       tab.tabIndex = isActive ? 0 : -1;
+      tab.dataset.index = String(index);
     });
 
     settingsPanes.forEach((pane) => {
@@ -283,6 +307,17 @@ function initSettingsPanel() {
       pane.hidden = !isActive;
       pane.setAttribute('aria-hidden', String(!isActive));
     });
+  };
+
+  const moveSettingsTabFocus = (currentIndex, direction) => {
+    const visibleTabs = Array.from(settingsTabs);
+    if (!visibleTabs.length) return;
+    const nextIndex = (currentIndex + direction + visibleTabs.length) % visibleTabs.length;
+    const nextTab = visibleTabs[nextIndex];
+    if (nextTab) {
+      setActiveSettingsTab(nextTab.dataset.settingsTab);
+      nextTab.focus();
+    }
   };
 
   if (settingsTile) {
@@ -305,8 +340,34 @@ function initSettingsPanel() {
     });
   }
 
-  settingsTabs.forEach((tab) => {
+  settingsTabs.forEach((tab, index) => {
     tab.addEventListener('click', () => setActiveSettingsTab(tab.dataset.settingsTab));
+    tab.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        moveSettingsTabFocus(index, 1);
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        moveSettingsTabFocus(index, -1);
+      }
+      if (event.key === 'Home') {
+        event.preventDefault();
+        const firstTab = settingsTabs[0];
+        if (firstTab) {
+          setActiveSettingsTab(firstTab.dataset.settingsTab);
+          firstTab.focus();
+        }
+      }
+      if (event.key === 'End') {
+        event.preventDefault();
+        const lastTab = settingsTabs[settingsTabs.length - 1];
+        if (lastTab) {
+          setActiveSettingsTab(lastTab.dataset.settingsTab);
+          lastTab.focus();
+        }
+      }
+    });
   });
 
   document.addEventListener('keydown', (event) => {
@@ -325,11 +386,13 @@ function initFileTabs() {
   if (!tabs.length || !cards.length) return;
 
   const setActiveTab = (tabName) => {
-    tabs.forEach((tab) => {
+    tabs.forEach((tab, index) => {
       const isActive = tab.dataset.tab === tabName;
       tab.classList.toggle('active', isActive);
       tab.classList.toggle('selected', isActive);
       tab.setAttribute('aria-selected', String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+      tab.dataset.index = String(index);
     });
 
     cards.forEach((card) => {
@@ -339,8 +402,44 @@ function initFileTabs() {
     });
   };
 
-  tabs.forEach((tab) => {
+  const moveTabFocus = (currentIndex, direction) => {
+    const visibleTabs = Array.from(tabs);
+    const nextIndex = (currentIndex + direction + visibleTabs.length) % visibleTabs.length;
+    const nextTab = visibleTabs[nextIndex];
+    if (nextTab) {
+      setActiveTab(nextTab.dataset.tab);
+      nextTab.focus();
+    }
+  };
+
+  tabs.forEach((tab, index) => {
     tab.addEventListener('click', () => setActiveTab(tab.dataset.tab));
+    tab.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        moveTabFocus(index, 1);
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        moveTabFocus(index, -1);
+      }
+      if (event.key === 'Home') {
+        event.preventDefault();
+        const firstTab = tabs[0];
+        if (firstTab) {
+          setActiveTab(firstTab.dataset.tab);
+          firstTab.focus();
+        }
+      }
+      if (event.key === 'End') {
+        event.preventDefault();
+        const lastTab = tabs[tabs.length - 1];
+        if (lastTab) {
+          setActiveTab(lastTab.dataset.tab);
+          lastTab.focus();
+        }
+      }
+    });
   });
 
   setActiveTab('all');
