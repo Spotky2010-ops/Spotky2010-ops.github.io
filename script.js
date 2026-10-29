@@ -2,6 +2,8 @@ const timeElement = document.getElementById('time');
 const dateElement = document.getElementById('date');
 const greetingElement = document.getElementById('greeting');
 
+const THEME_STORAGE_KEY = 'window12-theme';
+
 function updateClock() {
   if (!timeElement || !dateElement || !greetingElement) return;
 
@@ -23,6 +25,106 @@ function updateClock() {
   } else {
     greetingElement.textContent = 'Good evening';
   }
+}
+
+function applyTheme(themeName) {
+  const theme = themeName === 'light' ? 'light' : 'dark';
+  document.body.dataset.theme = theme;
+
+  const themeButtons = document.querySelectorAll('.theme-option');
+  themeButtons.forEach((button) => {
+    const isSelected = button.dataset.theme === theme;
+    button.classList.toggle('is-selected', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+  });
+
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function initTheme() {
+  const savedTheme = (() => {
+    try {
+      return localStorage.getItem(THEME_STORAGE_KEY);
+    } catch (error) {
+      return null;
+    }
+  })();
+
+  applyTheme(savedTheme || 'dark');
+
+  document.querySelectorAll('.theme-option').forEach((button) => {
+    button.addEventListener('click', () => applyTheme(button.dataset.theme));
+  });
+}
+
+function initSettingsPanel() {
+  const settingsTile = document.getElementById('settingsTile');
+  const dockSettingsButton = document.getElementById('dockSettingsButton');
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  const closeSettings = document.getElementById('closeSettings');
+  const settingsTabs = document.querySelectorAll('.settings-tab');
+  const settingsPanes = document.querySelectorAll('.settings-pane');
+
+  const openSettings = () => {
+    if (!settingsOverlay) return;
+    settingsOverlay.classList.add('is-open');
+    settingsOverlay.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeSettingsPanel = () => {
+    if (!settingsOverlay) return;
+    settingsOverlay.classList.remove('is-open');
+    settingsOverlay.setAttribute('aria-hidden', 'true');
+  };
+
+  const setActiveSettingsTab = (tabName) => {
+    settingsTabs.forEach((tab) => {
+      const isActive = tab.dataset.settingsTab === tabName;
+      tab.classList.toggle('active', isActive);
+      tab.setAttribute('aria-selected', String(isActive));
+    });
+
+    settingsPanes.forEach((pane) => {
+      const isActive = pane.dataset.pane === tabName;
+      pane.classList.toggle('active', isActive);
+    });
+  };
+
+  if (settingsTile) {
+    settingsTile.addEventListener('click', openSettings);
+  }
+
+  if (dockSettingsButton) {
+    dockSettingsButton.addEventListener('click', openSettings);
+  }
+
+  if (closeSettings) {
+    closeSettings.addEventListener('click', closeSettingsPanel);
+  }
+
+  if (settingsOverlay) {
+    settingsOverlay.addEventListener('click', (event) => {
+      if (event.target === settingsOverlay) {
+        closeSettingsPanel();
+      }
+    });
+  }
+
+  settingsTabs.forEach((tab) => {
+    tab.addEventListener('click', () => setActiveSettingsTab(tab.dataset.settingsTab));
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && settingsOverlay && settingsOverlay.classList.contains('is-open')) {
+      closeSettingsPanel();
+    }
+  });
+
+  setActiveSettingsTab('general');
 }
 
 function initFileTabs() {
@@ -187,7 +289,9 @@ function initImageLightbox() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   updateClock();
+  initSettingsPanel();
   initFileTabs();
   initPowerMenu();
   initImageLightbox();

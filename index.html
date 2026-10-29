@@ -7,7 +7,7 @@
     <meta name="description" content="Windows-inspired home screen concept for Spotky2010-ops.github.io" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-theme="dark">
     <div class="background-glow glow-one"></div>
     <div class="background-glow glow-two"></div>
 
@@ -90,7 +90,7 @@
             <span class="tile-icon">⌬</span>
             <span>Terminal</span>
           </button>
-          <button class="app-tile tile-orange">
+          <button class="app-tile tile-orange" id="settingsTile" type="button">
             <span class="tile-icon">⚙</span>
             <span>Settings</span>
           </button>
@@ -169,7 +169,8 @@
               <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 6" loading="lazy" />
               <img class="thumb thumb-photo" src="https://i.ibb.co/0yvQtgTb/20260830-153749.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 1" loading="lazy" />
               <img class="thumb thumb-photo" src="https://i.ibb.co/JWdDX12L/20260504-164607.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/3mQMHRnw/20260322-164525.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 3" loading="lazy" />            </div>
+              <img class="thumb thumb-photo" src="https://i.ibb.co/3mQMHRnw/20260322-164525.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 3" loading="lazy" />
+            </div>
             <div class="folder-footer">9 photos</div>
           </article>
         </div>
@@ -188,13 +189,62 @@
         <button class="dock-item" aria-label="Music">
           <span>♫</span>
         </button>
-        <button class="dock-item" aria-label="Settings">
+        <button class="dock-item" id="dockSettingsButton" aria-label="Settings">
           <span>⚙</span>
         </button>
         <button id="powerButton" class="dock-item power-button" aria-label="Power options" title="Power options">
           <span>⏻</span>
         </button>
       </nav>
+    </div>
+
+    <div class="settings-overlay" id="settingsOverlay" aria-hidden="true">
+      <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="settings-header">
+          <div class="settings-title-wrap">
+            <div class="settings-badge">⚙</div>
+            <div>
+              <div class="settings-kicker">System</div>
+              <h2 id="settingsTitle">Settings</h2>
+            </div>
+          </div>
+          <button class="settings-close" id="closeSettings" aria-label="Close settings">×</button>
+        </div>
+
+        <div class="settings-body">
+          <div class="settings-tabs" aria-label="Settings tabs">
+            <button class="settings-tab active" type="button" data-settings-tab="general">General</button>
+            <button class="settings-tab" type="button" data-settings-tab="appearance">Appearance</button>
+          </div>
+
+          <div class="settings-content">
+            <section class="settings-pane active" data-pane="general">
+              <div class="settings-group">
+                <label class="settings-label">Desktop mode</label>
+                <div class="settings-value">Window 12</div>
+              </div>
+              <div class="settings-group">
+                <label class="settings-label">Accent color</label>
+                <div class="settings-value">Blue Glow</div>
+              </div>
+              <div class="settings-group">
+                <label class="settings-label">Notifications</label>
+                <div class="settings-value">Enabled</div>
+              </div>
+            </section>
+
+            <section class="settings-pane" data-pane="appearance">
+              <div class="settings-group settings-group-stack">
+                <label class="settings-label">Theme</label>
+                <div class="theme-options" role="group" aria-label="Theme chooser">
+                  <button class="theme-option is-selected" type="button" data-theme="dark">Dark</button>
+                  <button class="theme-option" type="button" data-theme="light">Light</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="power-overlay" id="powerOverlay" aria-hidden="true">
