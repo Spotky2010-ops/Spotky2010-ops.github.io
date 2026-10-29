@@ -33,6 +33,7 @@
   --accent: #6ec6ff;
   --accent-strong: #5ab4ff;
   --accent-soft: rgba(110, 198, 255, 0.18);
+  --glass-alpha: 0.72;
 }
 
 body[data-accent="violet"] {
@@ -103,6 +104,41 @@ body[data-wallpaper="sunset"] {
   --body-bg-start: #1f1632;
   --body-bg-mid: #6a2d49;
   --body-bg-end: #f2a762;
+}
+
+body[data-transparency="low"] {
+  --glass-alpha: 0.58;
+}
+
+body[data-transparency="medium"] {
+  --glass-alpha: 0.72;
+}
+
+body[data-transparency="high"] {
+  --glass-alpha: 0.86;
+}
+
+body[data-taskbar="compact"] .dock {
+  width: min(500px, 100%);
+  height: 70px;
+}
+
+body[data-taskbar="autohide"] .dock {
+  opacity: 0.8;
+}
+
+body[data-accessibility="high-contrast"] {
+  --text: #f6fbff;
+  --muted: #dfefff;
+  --settings-muted: #dfefff;
+  --border: rgba(255,255,255,0.22);
+}
+
+body[data-accessibility="reduced-motion"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 * {
@@ -219,7 +255,7 @@ body {
 }
 
 .glass {
-  background: var(--glass-bg);
+  background: linear-gradient(180deg, rgba(255,255,255, calc(var(--glass-alpha) * 0.2)), rgba(255,255,255, calc(var(--glass-alpha) * 0.1))) ;
   border: 1px solid var(--border);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
 }
@@ -591,6 +627,7 @@ body {
   justify-content: center;
   gap: 14px;
   padding: 0 16px;
+  transition: width 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
 }
 
 .dock-item {
@@ -646,13 +683,21 @@ body {
 }
 
 .settings-panel {
-  width: min(560px, calc(100vw - 24px));
+  width: min(660px, calc(100vw - 24px));
   background: var(--settings-panel);
   border: 1px solid var(--settings-border);
   border-radius: 28px;
   box-shadow: 0 36px 90px rgba(0,0,0,0.22);
   padding: 18px 20px 20px;
   color: var(--text);
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.settings-overlay.is-open .settings-panel {
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
 .settings-header {
@@ -719,6 +764,7 @@ body {
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--settings-border);
   width: fit-content;
+  flex-wrap: wrap;
 }
 
 .settings-tab {
@@ -730,6 +776,7 @@ body {
   padding: 8px 14px;
   cursor: pointer;
   font: inherit;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .settings-tab.active {
@@ -875,6 +922,28 @@ body {
 
 .preview-sunset {
   background: linear-gradient(135deg, #281836 0%, #5b2d46 35%, #eb9a5a 100%);
+}
+
+.segmented-control {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.segment {
+  appearance: none;
+  border: 1px solid var(--settings-border);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.segment.active {
+  background: var(--accent-soft);
+  border-color: rgba(110, 198, 255, 0.4);
 }
 
 .toggle-btn {

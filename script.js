@@ -5,6 +5,9 @@ const greetingElement = document.getElementById('greeting');
 const THEME_STORAGE_KEY = 'window12-theme';
 const ACCENT_STORAGE_KEY = 'window12-accent';
 const WALLPAPER_STORAGE_KEY = 'window12-wallpaper';
+const TRANSPARENCY_STORAGE_KEY = 'window12-transparency';
+const TASKBAR_STORAGE_KEY = 'window12-taskbar';
+const ACCESSIBILITY_STORAGE_KEY = 'window12-accessibility';
 
 const accentLabels = {
   blue: 'Blue Glow',
@@ -13,6 +16,11 @@ const accentLabels = {
   rose: 'Rose Glow',
   amber: 'Amber Gold'
 };
+
+function applyMotionProfile() {
+  const reducedMotion = document.body.dataset.accessibility === 'reduced-motion';
+  document.body.classList.toggle('reduced-motion', reducedMotion);
+}
 
 function updateClock() {
   if (!timeElement || !dateElement || !greetingElement) return;
@@ -96,6 +104,64 @@ function applyWallpaper(wallpaperName) {
   }
 }
 
+function applyTransparency(value) {
+  const transparency = ['low', 'medium', 'high'].includes(value) ? value : 'medium';
+  document.body.dataset.transparency = transparency;
+
+  document.querySelectorAll('[data-transparency]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.transparency === transparency;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    }
+  });
+
+  try {
+    localStorage.setItem(TRANSPARENCY_STORAGE_KEY, transparency);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function applyTaskbar(mode) {
+  const taskbarMode = ['normal', 'compact', 'autohide'].includes(mode) ? mode : 'normal';
+  document.body.dataset.taskbar = taskbarMode;
+
+  document.querySelectorAll('[data-taskbar]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.taskbar === taskbarMode;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    }
+  });
+
+  try {
+    localStorage.setItem(TASKBAR_STORAGE_KEY, taskbarMode);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function applyAccessibility(level) {
+  const accessibility = ['standard', 'high-contrast', 'reduced-motion'].includes(level) ? level : 'standard';
+  document.body.dataset.accessibility = accessibility;
+  applyMotionProfile();
+
+  document.querySelectorAll('[data-accessibility]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.accessibility === accessibility;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    }
+  });
+
+  try {
+    localStorage.setItem(ACCESSIBILITY_STORAGE_KEY, accessibility);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
 function initTheme() {
   const savedTheme = (() => {
     try {
@@ -121,9 +187,36 @@ function initTheme() {
     }
   })();
 
+  const savedTransparency = (() => {
+    try {
+      return localStorage.getItem(TRANSPARENCY_STORAGE_KEY);
+    } catch (error) {
+      return null;
+    }
+  })();
+
+  const savedTaskbar = (() => {
+    try {
+      return localStorage.getItem(TASKBAR_STORAGE_KEY);
+    } catch (error) {
+      return null;
+    }
+  })();
+
+  const savedAccessibility = (() => {
+    try {
+      return localStorage.getItem(ACCESSIBILITY_STORAGE_KEY);
+    } catch (error) {
+      return null;
+    }
+  })();
+
   applyTheme(savedTheme || 'dark');
   applyAccent(savedAccent || 'blue');
   applyWallpaper(savedWallpaper || 'default');
+  applyTransparency(savedTransparency || 'medium');
+  applyTaskbar(savedTaskbar || 'normal');
+  applyAccessibility(savedAccessibility || 'standard');
 
   document.querySelectorAll('.theme-option').forEach((button) => {
     button.addEventListener('click', () => applyTheme(button.dataset.theme));
@@ -135,6 +228,24 @@ function initTheme() {
 
   document.querySelectorAll('.wallpaper-option').forEach((button) => {
     button.addEventListener('click', () => applyWallpaper(button.dataset.wallpaper));
+  });
+
+  document.querySelectorAll('[data-transparency]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyTransparency(button.dataset.transparency));
+    }
+  });
+
+  document.querySelectorAll('[data-taskbar]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyTaskbar(button.dataset.taskbar));
+    }
+  });
+
+  document.querySelectorAll('[data-accessibility]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyAccessibility(button.dataset.accessibility));
+    }
   });
 }
 

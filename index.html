@@ -7,7 +7,7 @@
     <meta name="description" content="Windows-inspired home screen concept for Spotky2010-ops.github.io" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body data-theme="dark" data-wallpaper="default" data-accent="blue">
+  <body data-theme="dark" data-wallpaper="default" data-accent="blue" data-transparency="medium" data-taskbar="normal" data-accessibility="standard">
     <div class="background-glow glow-one"></div>
     <div class="background-glow glow-two"></div>
 
@@ -216,6 +216,7 @@
             <button class="settings-tab active" type="button" data-settings-tab="general">General</button>
             <button class="settings-tab" type="button" data-settings-tab="personalization">Personalization</button>
             <button class="settings-tab" type="button" data-settings-tab="sound">Sound</button>
+            <button class="settings-tab" type="button" data-settings-tab="accessibility">Accessibility</button>
           </div>
 
           <div class="settings-content">
@@ -271,6 +272,24 @@
                   </button>
                 </div>
               </div>
+
+              <div class="settings-group settings-group-stack">
+                <label class="settings-label">Transparency</label>
+                <div class="segmented-control" role="group" aria-label="Transparency level">
+                  <button class="segment active" type="button" data-transparency="low">Low</button>
+                  <button class="segment" type="button" data-transparency="medium">Medium</button>
+                  <button class="segment" type="button" data-transparency="high">High</button>
+                </div>
+              </div>
+
+              <div class="settings-group settings-group-stack">
+                <label class="settings-label">Taskbar</label>
+                <div class="segmented-control" role="group" aria-label="Taskbar style">
+                  <button class="segment active" type="button" data-taskbar="normal">Normal</button>
+                  <button class="segment" type="button" data-taskbar="compact">Compact</button>
+                  <button class="segment" type="button" data-taskbar="autohide">Auto-hide</button>
+                </div>
+              </div>
             </section>
 
             <section class="settings-pane" data-pane="sound">
@@ -285,6 +304,21 @@
                 <div class="volume-meter" aria-label="Volume level">
                   <span class="volume-fill"></span>
                 </div>
+              </div>
+            </section>
+
+            <section class="settings-pane" data-pane="accessibility">
+              <div class="settings-group settings-group-stack">
+                <label class="settings-label">Accessibility profile</label>
+                <div class="segmented-control" role="group" aria-label="Accessibility level">
+                  <button class="segment active" type="button" data-accessibility="standard">Standard</button>
+                  <button class="segment" type="button" data-accessibility="high-contrast">High contrast</button>
+                  <button class="segment" type="button" data-accessibility="reduced-motion">Reduced motion</button>
+                </div>
+              </div>
+              <div class="settings-group">
+                <label class="settings-label">Text size</label>
+                <div class="settings-value">100%</div>
               </div>
             </section>
           </div>
