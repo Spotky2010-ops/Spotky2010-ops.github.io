@@ -3,6 +3,16 @@ const dateElement = document.getElementById('date');
 const greetingElement = document.getElementById('greeting');
 
 const THEME_STORAGE_KEY = 'window12-theme';
+const ACCENT_STORAGE_KEY = 'window12-accent';
+const WALLPAPER_STORAGE_KEY = 'window12-wallpaper';
+
+const accentLabels = {
+  blue: 'Blue Glow',
+  violet: 'Violet Pulse',
+  green: 'Green Refresh',
+  rose: 'Rose Glow',
+  amber: 'Amber Gold'
+};
 
 function updateClock() {
   if (!timeElement || !dateElement || !greetingElement) return;
@@ -45,6 +55,47 @@ function applyTheme(themeName) {
   }
 }
 
+function applyAccent(accentName) {
+  const accent = accentName || 'blue';
+  const validAccent = ['blue', 'violet', 'green', 'rose', 'amber'].includes(accent) ? accent : 'blue';
+  document.body.dataset.accent = validAccent;
+
+  const accentSwatches = document.querySelectorAll('.accent-swatch');
+  accentSwatches.forEach((button) => {
+    const isActive = button.dataset.accent === validAccent;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+
+  const currentAccentLabel = document.getElementById('currentAccentLabel');
+  if (currentAccentLabel) {
+    currentAccentLabel.textContent = accentLabels[validAccent] || 'Blue Glow';
+  }
+
+  try {
+    localStorage.setItem(ACCENT_STORAGE_KEY, validAccent);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function applyWallpaper(wallpaperName) {
+  const wallpaper = ['default', 'aurora', 'sunset'].includes(wallpaperName) ? wallpaperName : 'default';
+  document.body.dataset.wallpaper = wallpaper;
+
+  document.querySelectorAll('.wallpaper-option').forEach((button) => {
+    const isActive = button.dataset.wallpaper === wallpaper;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+
+  try {
+    localStorage.setItem(WALLPAPER_STORAGE_KEY, wallpaper);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
 function initTheme() {
   const savedTheme = (() => {
     try {
@@ -54,10 +105,36 @@ function initTheme() {
     }
   })();
 
+  const savedAccent = (() => {
+    try {
+      return localStorage.getItem(ACCENT_STORAGE_KEY);
+    } catch (error) {
+      return null;
+    }
+  })();
+
+  const savedWallpaper = (() => {
+    try {
+      return localStorage.getItem(WALLPAPER_STORAGE_KEY);
+    } catch (error) {
+      return null;
+    }
+  })();
+
   applyTheme(savedTheme || 'dark');
+  applyAccent(savedAccent || 'blue');
+  applyWallpaper(savedWallpaper || 'default');
 
   document.querySelectorAll('.theme-option').forEach((button) => {
     button.addEventListener('click', () => applyTheme(button.dataset.theme));
+  });
+
+  document.querySelectorAll('.accent-swatch').forEach((button) => {
+    button.addEventListener('click', () => applyAccent(button.dataset.accent));
+  });
+
+  document.querySelectorAll('.wallpaper-option').forEach((button) => {
+    button.addEventListener('click', () => applyWallpaper(button.dataset.wallpaper));
   });
 }
 
