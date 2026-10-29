@@ -274,11 +274,14 @@ function initSettingsPanel() {
       const isActive = tab.dataset.settingsTab === tabName;
       tab.classList.toggle('active', isActive);
       tab.setAttribute('aria-selected', String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
     });
 
     settingsPanes.forEach((pane) => {
       const isActive = pane.dataset.pane === tabName;
       pane.classList.toggle('active', isActive);
+      pane.hidden = !isActive;
+      pane.setAttribute('aria-hidden', String(!isActive));
     });
   };
 
