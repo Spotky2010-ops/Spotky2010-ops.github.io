@@ -1,0 +1,53 @@
+<button class="app-tile tile-violet game-2048-launch" id="game2048Tile" type="button">
+  <span class="tile-icon">✦</span>
+  <span>2048</span>
+</button>
+
+<div class="game-2048-overlay" id="game2048Overlay" aria-hidden="true">
+  <div class="game-2048-window" role="dialog" aria-modal="true" aria-labelledby="game2048Title">
+    <div class="game-2048-titlebar">
+      <div class="game-2048-app">
+        <span class="game-2048-app-icon">✦</span>
+        <span class="game-2048-app-name" id="game2048Title">2048</span>
+      </div>
+
+      <div class="game-2048-window-actions" aria-label="Window actions">
+        <button class="window-action window-action--minimize" type="button" aria-label="Minimize">—</button>
+        <button class="window-action window-action--maximize" type="button" aria-label="Maximize">▢</button>
+        <button class="window-action close-action" id="game2048Close" type="button" aria-label="Close">×</button>
+      </div>
+    </div>
+
+    <div class="game-2048-commandbar" aria-label="Game commands">
+      <button class="command-pill command-pill--active" type="button">Game</button>
+      <button class="command-pill" type="button">Stats</button>
+      <button class="command-pill" type="button">Help</button>
+    </div>
+
+    <div class="game-2048-noise" aria-hidden="true"></div>
+
+    <div class="game-2048-content">
+      <div class="game-2048-header-row">
+        <div class="game-score-box">
+          <span>Score</span>
+          <strong id="game2048Score">0</strong>
+        </div>
+
+        <div class="game-score-box">
+          <span>Best</span>
+          <strong id="game2048Best">0</strong>
+        </div>
+
+        <button class="game-2048-restart" id="game2048Restart" type="button">
+          New Game
+        </button>
+      </div>
+
+      <div class="game-2048-board-wrap">
+        <div class="game-2048-board" id="game2048Board" aria-label="2048 game board"></div>
+      </div>
+
+      <div class="game-2048-message" id="game2048Message">Use arrow keys to play.</div>
+    </div>
+  </div>
+</div>
