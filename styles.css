@@ -607,6 +607,8 @@ body {
 .cat-folder .thumb, [data-category="cat"] .thumb { background: linear-gradient(180deg, rgba(255, 174, 113, 0.35), rgba(255, 155, 99, 0.14)); }
 .dog-folder .thumb, [data-category="dog"] .thumb { background: linear-gradient(180deg, rgba(130, 202, 255, 0.35), rgba(98, 154, 220, 0.12)); }
 .robot-folder .thumb, [data-category="robot"] .thumb { background: linear-gradient(180deg, rgba(154, 130, 255, 0.34), rgba(103, 84, 196, 0.14)); }
+.everyday-reward-folder .thumb, [data-category="everyday-reward"] .thumb { background: linear-gradient(180deg, rgba(154, 130, 255, 0.34), rgba(103, 84, 196, 0.14)); }
+
 
 .folder-footer {
   color: var(--muted);
