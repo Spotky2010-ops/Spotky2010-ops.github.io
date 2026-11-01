@@ -236,147 +236,151 @@
         </div>
 
         <div class="settings-body">
-          <div class="settings-tabs" aria-label="Settings tabs">
-            <button class="settings-tab active" type="button" data-settings-tab="general">General</button>
-            <button class="settings-tab" type="button" data-settings-tab="personalization">Personalization</button>
-            <button class="settings-tab" type="button" data-settings-tab="sound">Sound</button>
-            <button class="settings-tab" type="button" data-settings-tab="accessibility">Accessibility</button>
-            <button class="settings-tab" type="button" data-settings-tab="customsize">Custom size</button>
-          </div>
+          <aside class="settings-sidebar" aria-label="Settings categories">
+            <div class="settings-tabs" aria-label="Settings tabs">
+              <button class="settings-tab active" type="button" data-settings-tab="general">General</button>
+              <button class="settings-tab" type="button" data-settings-tab="personalization">Personalization</button>
+              <button class="settings-tab" type="button" data-settings-tab="sound">Sound</button>
+              <button class="settings-tab" type="button" data-settings-tab="accessibility">Accessibility</button>
+              <button class="settings-tab" type="button" data-settings-tab="customsize">Custom size</button>
+            </div>
+          </aside>
 
-          <div class="settings-content">
-            <section class="settings-pane active" data-pane="general">
-              <div class="settings-group">
-                <label class="settings-label">Desktop mode</label>
-                <div class="settings-value">Window 12</div>
-              </div>
-              <div class="settings-group">
-                <label class="settings-label">Accent color</label>
-                <div class="settings-value" id="currentAccentLabel">Blue Glow</div>
-              </div>
-              <div class="settings-group">
-                <label class="settings-label">Notifications</label>
-                <div class="settings-value">Enabled</div>
-              </div>
-            </section>
-
-            <section class="settings-pane" data-pane="personalization">
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">Theme</label>
-                <div class="theme-options" role="group" aria-label="Theme chooser">
-                  <button class="theme-option is-selected" type="button" data-theme="dark">Dark</button>
-                  <button class="theme-option" type="button" data-theme="light">Light</button>
+          <div class="settings-main">
+            <div class="settings-content">
+              <section class="settings-pane active" data-pane="general">
+                <div class="settings-group">
+                  <label class="settings-label">Desktop mode</label>
+                  <div class="settings-value">Window 12</div>
                 </div>
-              </div>
-
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">App font</label>
-                <div class="font-options" role="group" aria-label="App font chooser">
-                  <button class="font-option is-selected" type="button" data-font="default">Default</button>
-                  <button class="font-option" type="button" data-font="gotham">Gotham</button>
-                  <button class="font-option" type="button" data-font="fredoka">Fredoka</button>
-                  <button class="font-option" type="button" data-font="adobe-clean">Adobe Clean</button>
-                  <button class="font-option" type="button" data-font="montserrat">Montserrat</button>
+                <div class="settings-group">
+                  <label class="settings-label">Accent color</label>
+                  <div class="settings-value" id="currentAccentLabel">Blue Glow</div>
                 </div>
-              </div>
-
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">Accent</label>
-                <div class="swatch-grid" aria-label="Accent color chooser">
-                  <button class="accent-swatch active" type="button" data-accent="blue" aria-label="Blue accent" title="Blue"><span style="background: linear-gradient(135deg, #7bd7ff, #6ad0ff);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="violet" aria-label="Violet accent" title="Violet"><span style="background: linear-gradient(135deg, #b39dff, #8469fd);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="green" aria-label="Green accent" title="Green"><span style="background: linear-gradient(135deg, #7de9bd, #56c790);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="rose" aria-label="Rose accent" title="Rose"><span style="background: linear-gradient(135deg, #ff8ec7, #ff5ea8);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="amber" aria-label="Amber accent" title="Amber"><span style="background: linear-gradient(135deg, #ffd36a, #ffb447);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="aqua" aria-label="Aqua accent" title="Aqua"><span style="background: linear-gradient(135deg, #80ecff, #48d7f7);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="coral" aria-label="Coral accent" title="Coral"><span style="background: linear-gradient(135deg, #ffb29d, #ff7f6a);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="mint" aria-label="Mint accent" title="Mint"><span style="background: linear-gradient(135deg, #9ef0c6, #56d79a);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="plum" aria-label="Plum accent" title="Plum"><span style="background: linear-gradient(135deg, #d9b3ff, #9b6ff9);"></span></button>
-                  <button class="accent-swatch" type="button" data-accent="gold" aria-label="Gold accent" title="Gold"><span style="background: linear-gradient(135deg, #ffe38a, #f6c54a);"></span></button>
+                <div class="settings-group">
+                  <label class="settings-label">Notifications</label>
+                  <div class="settings-value">Enabled</div>
                 </div>
-              </div>
+              </section>
 
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">Wallpaper</label>
-                <div class="wallpaper-grid">
-                  <button class="wallpaper-option active" type="button" data-wallpaper="default">
-                    <span class="wallpaper-preview preview-default"></span>
-                    <small>Default</small>
+              <section class="settings-pane" data-pane="personalization">
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">Theme</label>
+                  <div class="theme-options" role="group" aria-label="Theme chooser">
+                    <button class="theme-option is-selected" type="button" data-theme="dark">Dark</button>
+                    <button class="theme-option" type="button" data-theme="light">Light</button>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">App font</label>
+                  <div class="font-options" role="group" aria-label="App font chooser">
+                    <button class="font-option is-selected" type="button" data-font="default">Default</button>
+                    <button class="font-option" type="button" data-font="gotham">Gotham</button>
+                    <button class="font-option" type="button" data-font="fredoka">Fredoka</button>
+                    <button class="font-option" type="button" data-font="adobe-clean">Adobe Clean</button>
+                    <button class="font-option" type="button" data-font="montserrat">Montserrat</button>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">Accent</label>
+                  <div class="swatch-grid" aria-label="Accent color chooser">
+                    <button class="accent-swatch active" type="button" data-accent="blue" aria-label="Blue accent" title="Blue"><span style="background: linear-gradient(135deg, #7bd7ff, #6ad0ff);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="violet" aria-label="Violet accent" title="Violet"><span style="background: linear-gradient(135deg, #b39dff, #8469fd);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="green" aria-label="Green accent" title="Green"><span style="background: linear-gradient(135deg, #7de9bd, #56c790);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="rose" aria-label="Rose accent" title="Rose"><span style="background: linear-gradient(135deg, #ff8ec7, #ff5ea8);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="amber" aria-label="Amber accent" title="Amber"><span style="background: linear-gradient(135deg, #ffd36a, #ffb447);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="aqua" aria-label="Aqua accent" title="Aqua"><span style="background: linear-gradient(135deg, #80ecff, #48d7f7);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="coral" aria-label="Coral accent" title="Coral"><span style="background: linear-gradient(135deg, #ffb29d, #ff7f6a);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="mint" aria-label="Mint accent" title="Mint"><span style="background: linear-gradient(135deg, #9ef0c6, #56d79a);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="plum" aria-label="Plum accent" title="Plum"><span style="background: linear-gradient(135deg, #d9b3ff, #9b6ff9);"></span></button>
+                    <button class="accent-swatch" type="button" data-accent="gold" aria-label="Gold accent" title="Gold"><span style="background: linear-gradient(135deg, #ffe38a, #f6c54a);"></span></button>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">Wallpaper</label>
+                  <div class="wallpaper-grid">
+                    <button class="wallpaper-option active" type="button" data-wallpaper="default">
+                      <span class="wallpaper-preview preview-default"></span>
+                      <small>Default</small>
+                    </button>
+                    <button class="wallpaper-option" type="button" data-wallpaper="aurora">
+                      <span class="wallpaper-preview preview-aurora"></span>
+                      <small>Aurora</small>
+                    </button>
+                    <button class="wallpaper-option" type="button" data-wallpaper="sunset">
+                      <span class="wallpaper-preview preview-sunset"></span>
+                      <small>Sunset</small>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">Transparency</label>
+                  <div class="segmented-control" role="group" aria-label="Transparency level">
+                    <button class="segment active" type="button" data-transparency="low">Low</button>
+                    <button class="segment" type="button" data-transparency="medium">Medium</button>
+                    <button class="segment" type="button" data-transparency="high">High</button>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">Taskbar</label>
+                  <div class="segmented-control" role="group" aria-label="Taskbar style">
+                    <button class="segment active" type="button" data-taskbar="normal">Normal</button>
+                    <button class="segment" type="button" data-taskbar="compact">Compact</button>
+                    <button class="segment" type="button" data-taskbar="autohide">Auto-hide</button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="settings-pane" data-pane="sound">
+                <div class="settings-group">
+                  <label class="settings-label">System sounds (Never Released)</label>
+                  <button class="toggle-btn is-on" type="button" aria-pressed="true">
+                    <span class="toggle-knob"></span>
                   </button>
-                  <button class="wallpaper-option" type="button" data-wallpaper="aurora">
-                    <span class="wallpaper-preview preview-aurora"></span>
-                    <small>Aurora</small>
-                  </button>
-                  <button class="wallpaper-option" type="button" data-wallpaper="sunset">
-                    <span class="wallpaper-preview preview-sunset"></span>
-                    <small>Sunset</small>
-                  </button>
                 </div>
-              </div>
+                <div class="settings-group">
+                  <label class="settings-label">Volume</label>
+                  <div class="volume-meter" aria-label="Volume level">
+                    <span class="volume-fill"></span>
+                  </div>
+                </div>
+              </section>
 
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">Transparency</label>
-                <div class="segmented-control" role="group" aria-label="Transparency level">
-                  <button class="segment active" type="button" data-transparency="low">Low</button>
-                  <button class="segment" type="button" data-transparency="medium">Medium</button>
-                  <button class="segment" type="button" data-transparency="high">High</button>
+              <section class="settings-pane" data-pane="accessibility">
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">Accessibility profile</label>
+                  <div class="segmented-control" role="group" aria-label="Accessibility level">
+                    <button class="segment active" type="button" data-accessibility="standard">Standard</button>
+                    <button class="segment" type="button" data-accessibility="high-contrast">High contrast</button>
+                    <button class="segment" type="button" data-accessibility="reduced-motion">Reduced motion</button>
+                  </div>
                 </div>
-              </div>
+                <div class="settings-group">
+                  <label class="settings-label">Text size</label>
+                  <div class="settings-value">100%</div>
+                </div>
+              </section>
 
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">Taskbar</label>
-                <div class="segmented-control" role="group" aria-label="Taskbar style">
-                  <button class="segment active" type="button" data-taskbar="normal">Normal</button>
-                  <button class="segment" type="button" data-taskbar="compact">Compact</button>
-                  <button class="segment" type="button" data-taskbar="autohide">Auto-hide</button>
+              <section class="settings-pane" data-pane="customsize">
+                <div class="settings-group settings-group-stack">
+                  <label class="settings-label">Window scale</label>
+                  <div class="segmented-control" role="group" aria-label="Window scale">
+                    <button class="segment active" type="button">100%</button>
+                    <button class="segment" type="button">110%</button>
+                    <button class="segment" type="button">125%</button>
+                  </div>
                 </div>
-              </div>
-            </section>
-
-            <section class="settings-pane" data-pane="sound">
-              <div class="settings-group">
-                <label class="settings-label">System sounds (Never Released)</label>
-                <button class="toggle-btn is-on" type="button" aria-pressed="true">
-                  <span class="toggle-knob"></span>
-                </button>
-              </div>
-              <div class="settings-group">
-                <label class="settings-label">Volume</label>
-                <div class="volume-meter" aria-label="Volume level">
-                  <span class="volume-fill"></span>
+                <div class="settings-group">
+                  <label class="settings-label">UI density</label>
+                  <div class="settings-value">Comfortable</div>
                 </div>
-              </div>
-            </section>
-
-            <section class="settings-pane" data-pane="accessibility">
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">Accessibility profile</label>
-                <div class="segmented-control" role="group" aria-label="Accessibility level">
-                  <button class="segment active" type="button" data-accessibility="standard">Standard</button>
-                  <button class="segment" type="button" data-accessibility="high-contrast">High contrast</button>
-                  <button class="segment" type="button" data-accessibility="reduced-motion">Reduced motion</button>
-                </div>
-              </div>
-              <div class="settings-group">
-                <label class="settings-label">Text size</label>
-                <div class="settings-value">100%</div>
-              </div>
-            </section>
-
-            <section class="settings-pane" data-pane="customsize">
-              <div class="settings-group settings-group-stack">
-                <label class="settings-label">Window scale</label>
-                <div class="segmented-control" role="group" aria-label="Window scale">
-                  <button class="segment active" type="button">100%</button>
-                  <button class="segment" type="button">110%</button>
-                  <button class="segment" type="button">125%</button>
-                </div>
-              </div>
-              <div class="settings-group">
-                <label class="settings-label">UI density</label>
-                <div class="settings-value">Comfortable</div>
-              </div>
-            </section>
+              </section>
+            </div>
           </div>
         </div>
       </div>
