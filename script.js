@@ -108,7 +108,7 @@ function applyAccent(accentName) {
 }
 
 function applyFont(fontName) {
-  const font = ['default', 'gotham', 'fredoka', 'adobe-clean', 'montserrat'].includes(fontName) ? fontName : 'default';
+  const font = ['default', 'gotham', 'fredoka', 'adobe-clean', 'montserrat', 'poppins', 'quicksand'].includes(fontName) ? fontName : 'default';
   document.body.dataset.font = font;
 
   const fontButtons = document.querySelectorAll('.font-option');
@@ -125,7 +125,9 @@ function applyFont(fontName) {
     gotham: '"Gotham", "Segoe UI", sans-serif',
     fredoka: '"Fredoka", "Segoe UI", sans-serif',
     'adobe-clean': '"Adobe Clean", "Segoe UI", sans-serif',
-    montserrat: '"Montserrat", "Segoe UI", sans-serif'
+    montserrat: '"Montserrat", "Segoe UI", sans-serif',
+    poppins: '"Poppins", "Segoe UI", sans-serif',
+    quicksand: '"Quicksand", "Segoe UI", sans-serif'
   };
 
   document.documentElement.style.setProperty('--font-ui', fontMap[font] || fontMap.default);
