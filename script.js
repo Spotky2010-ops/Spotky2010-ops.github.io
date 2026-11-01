@@ -8,13 +8,19 @@ const WALLPAPER_STORAGE_KEY = 'window12-wallpaper';
 const TRANSPARENCY_STORAGE_KEY = 'window12-transparency';
 const TASKBAR_STORAGE_KEY = 'window12-taskbar';
 const ACCESSIBILITY_STORAGE_KEY = 'window12-accessibility';
+const FONT_STORAGE_KEY = 'window12-font';
 
 const accentLabels = {
   blue: 'Blue Glow',
   violet: 'Violet Pulse',
   green: 'Green Refresh',
   rose: 'Rose Glow',
-  amber: 'Amber Gold'
+  amber: 'Amber Gold',
+  aqua: 'Aqua Drift',
+  coral: 'Coral Sunset',
+  mint: 'Mint Pop',
+  plum: 'Plum Night',
+  gold: 'Gold Leaf'
 };
 
 function applyMotionProfile() {
@@ -77,7 +83,7 @@ function applyTheme(themeName) {
 
 function applyAccent(accentName) {
   const accent = accentName || 'blue';
-  const validAccent = ['blue', 'violet', 'green', 'rose', 'amber'].includes(accent) ? accent : 'blue';
+  const validAccent = ['blue', 'violet', 'green', 'rose', 'amber', 'aqua', 'coral', 'mint', 'plum', 'gold'].includes(accent) ? accent : 'blue';
   document.body.dataset.accent = validAccent;
 
   const accentSwatches = document.querySelectorAll('.accent-swatch');
@@ -96,6 +102,36 @@ function applyAccent(accentName) {
 
   try {
     localStorage.setItem(ACCENT_STORAGE_KEY, validAccent);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function applyFont(fontName) {
+  const font = ['default', 'gotham', 'fredoka', 'adobe-clean', 'montserrat'].includes(fontName) ? fontName : 'default';
+  document.body.dataset.font = font;
+
+  const fontButtons = document.querySelectorAll('.font-option');
+  fontButtons.forEach((button) => {
+    const isSelected = button.dataset.font === font;
+    button.classList.toggle('is-selected', isSelected);
+    button.classList.toggle('selected', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+    button.setAttribute('aria-selected', String(isSelected));
+  });
+
+  const fontMap = {
+    default: '"Segoe UI", "Inter", sans-serif',
+    gotham: '"Gotham", "Segoe UI", sans-serif',
+    fredoka: '"Fredoka", "Segoe UI", sans-serif',
+    'adobe-clean': '"Adobe Clean", "Segoe UI", sans-serif',
+    montserrat: '"Montserrat", "Segoe UI", sans-serif'
+  };
+
+  document.documentElement.style.setProperty('--font-ui', fontMap[font] || fontMap.default);
+
+  try {
+    localStorage.setItem(FONT_STORAGE_KEY, font);
   } catch (error) {
     // Ignore storage errors in restricted environments.
   }
@@ -233,8 +269,17 @@ function initTheme() {
     }
   })();
 
+  const savedFont = (() => {
+    try {
+      return localStorage.getItem(FONT_STORAGE_KEY);
+    } catch (error) {
+      return null;
+    }
+  })();
+
   applyTheme(savedTheme || 'dark');
   applyAccent(savedAccent || 'blue');
+  applyFont(savedFont || 'default');
   applyWallpaper(savedWallpaper || 'default');
   applyTransparency(savedTransparency || 'medium');
   applyTaskbar(savedTaskbar || 'normal');
@@ -246,6 +291,10 @@ function initTheme() {
 
   document.querySelectorAll('.accent-swatch').forEach((button) => {
     button.addEventListener('click', () => applyAccent(button.dataset.accent));
+  });
+
+  document.querySelectorAll('.font-option').forEach((button) => {
+    button.addEventListener('click', () => applyFont(button.dataset.font));
   });
 
   document.querySelectorAll('.wallpaper-option').forEach((button) => {
@@ -445,6 +494,23 @@ function initFileTabs() {
   setActiveTab('all');
 }
 
+function initScrollControls() {
+  const scrollUp = document.getElementById('scrollUp');
+  const scrollDown = document.getElementById('scrollDown');
+
+  if (scrollUp) {
+    scrollUp.addEventListener('click', () => {
+      window.scrollBy({ top: -260, behavior: 'smooth' });
+    });
+  }
+
+  if (scrollDown) {
+    scrollDown.addEventListener('click', () => {
+      window.scrollBy({ top: 260, behavior: 'smooth' });
+    });
+  }
+}
+
 function initPowerMenu() {
   const powerButton = document.getElementById('powerButton');
   const powerOverlay = document.getElementById('powerOverlay');
@@ -583,6 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateClock();
   initSettingsPanel();
   initFileTabs();
+  initScrollControls();
   initPowerMenu();
   initImageLightbox();
   setInterval(updateClock, 30000);
