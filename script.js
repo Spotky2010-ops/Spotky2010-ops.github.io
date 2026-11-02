@@ -1,984 +1,1027 @@
-const timeElement = document.getElementById('time');
-const dateElement = document.getElementById('date');
-const greetingElement = document.getElementById('greeting');
-
-const THEME_STORAGE_KEY = 'window12-theme';
-const ACCENT_STORAGE_KEY = 'window12-accent';
-const WALLPAPER_STORAGE_KEY = 'window12-wallpaper';
-const TRANSPARENCY_STORAGE_KEY = 'window12-transparency';
-const TASKBAR_STORAGE_KEY = 'window12-taskbar';
-const ACCESSIBILITY_STORAGE_KEY = 'window12-accessibility';
-const FONT_STORAGE_KEY = 'window12-font';
-
-const accentLabels = {
-  blue: 'Blue Glow',
-  violet: 'Violet Pulse',
-  green: 'Green Refresh',
-  rose: 'Rose Glow',
-  amber: 'Amber Gold',
-  aqua: 'Aqua Drift',
-  coral: 'Coral Sunset',
-  mint: 'Mint Pop',
-  plum: 'Plum Night',
-  gold: 'Gold Leaf'
-};
-
-function normalizeTabName(value) {
-  return String(value ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/[\s_]+/g, ' ')
-    .replace(/[^a-z0-9 ]+/g, '');
+ :root {
+  --bg: #040b13;
+  --bg-2: #0b1320;
+  --bg-3: #152638;
+  --panel: rgba(14, 20, 28, 0.72);
+  --panel-strong: rgba(12, 18, 26, 0.92);
+  --panel-soft: rgba(255, 255, 255, 0.04);
+  --card: rgba(255, 255, 255, 0.04);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --stroke-soft: rgba(255, 255, 255, 0.08);
+  --text: #eef6ff;
+  --muted: #9bb4cc;
+  --shadow: rgba(7, 12, 20, 0.48);
+  --accent-1: #7bd7ff;
+  --accent-2: #5aa8ff;
+  --accent-3: #b6eaff;
+  --accent-soft: rgba(123, 215, 255, 0.16);
+  --ring: rgba(123, 215, 255, 0.35);
+  --glass-alpha: 0.72;
+  --panel-alpha: 0.76;
+  --window-scale: 1;
+  --text-scale: 1;
+  --window-radius: 26px;
+  --font-ui: "Segoe UI", "Inter", sans-serif;
+  --font-settings: "Segoe UI", "Segoe UI Variable", "Inter", "SF Pro Display", sans-serif;
 }
 
-function applyMotionProfile() {
-  const reducedMotion = document.body.dataset.accessibility === 'reduced-motion';
-  document.body.classList.toggle('reduced-motion', reducedMotion);
+body[data-theme="dark"] {
+  --bg: #020814;
+  --bg-2: #07121d;
+  --bg-3: #0f1d2a;
+  --panel: rgba(14, 20, 28, 0.72);
+  --panel-strong: rgba(12, 18, 26, 0.92);
+  --text: #eef6ff;
+  --muted: #9bb4cc;
+  --stroke: rgba(255, 255, 255, 0.14);
+  --stroke-soft: rgba(255, 255, 255, 0.09);
+  --shadow: rgba(7, 12, 20, 0.48);
 }
 
-function updateClock() {
-  if (!timeElement || !dateElement || !greetingElement) return;
+body[data-theme="light"] {
+  --bg: #eaf5ff;
+  --bg-2: #dbeeff;
+  --bg-3: #cbe1f9;
+  --panel: rgba(255, 255, 255, 0.7);
+  --panel-strong: rgba(255, 255, 255, 0.9);
+  --text: #1f2b3a;
+  --muted: #51657b;
+  --stroke: rgba(34, 52, 71, 0.18);
+  --stroke-soft: rgba(34, 52, 71, 0.1);
+  --shadow: rgba(125, 153, 188, 0.22);
+}
 
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const day = now.toLocaleDateString(undefined, { weekday: 'long' });
-  const monthDay = now.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+body[data-theme="midnight"] {
+  --bg: #030912;
+  --bg-2: #090f1b;
+  --bg-3: #1a1730;
+  --panel: rgba(11, 16, 27, 0.76);
+  --panel-strong: rgba(16, 20, 32, 0.92);
+  --text: #edf6ff;
+  --muted: #9eb6d9;
+  --stroke: rgba(196, 207, 255, 0.16);
+  --stroke-soft: rgba(196, 207, 255, 0.09);
+  --shadow: rgba(2, 7, 18, 0.56);
+}
 
-  timeElement.textContent = `${hours}:${minutes}`;
-  dateElement.textContent = `${day}, ${monthDay}`;
+body[data-accent="blue"] {
+  --accent-1: #7bd7ff;
+  --accent-2: #5aa8ff;
+  --accent-3: #b6eaff;
+  --accent-soft: rgba(123, 215, 255, 0.18);
+  --ring: rgba(123, 215, 255, 0.35);
+}
 
-  const hour = now.getHours();
+body[data-accent="violet"] {
+  --accent-1: #b39dff;
+  --accent-2: #8469fd;
+  --accent-3: #d9c9ff;
+  --accent-soft: rgba(179, 157, 255, 0.18);
+  --ring: rgba(179, 157, 255, 0.35);
+}
 
-  if (hour < 12) {
-    greetingElement.textContent = 'Good morning';
-  } else if (hour < 18) {
-    greetingElement.textContent = 'Good afternoon';
-  } else {
-    greetingElement.textContent = 'Good evening';
+body[data-accent="green"] {
+  --accent-1: #7ce6ad;
+  --accent-2: #58be8f;
+  --accent-3: #c5f2d8;
+  --accent-soft: rgba(124, 230, 173, 0.18);
+  --ring: rgba(124, 230, 173, 0.35);
+}
+
+body[data-accent="rose"] {
+  --accent-1: #ff8ec7;
+  --accent-2: #ff5ea8;
+  --accent-3: #ffc4e3;
+  --accent-soft: rgba(255, 142, 199, 0.18);
+  --ring: rgba(255, 142, 199, 0.35);
+}
+
+body[data-accent="amber"] {
+  --accent-1: #ffd36a;
+  --accent-2: #ffb447;
+  --accent-3: #ffe6a6;
+  --accent-soft: rgba(255, 211, 106, 0.18);
+  --ring: rgba(255, 211, 106, 0.35);
+}
+
+body[data-accent="aqua"] {
+  --accent-1: #80ecff;
+  --accent-2: #48d7f7;
+  --accent-3: #c2f4ff;
+  --accent-soft: rgba(128, 236, 255, 0.18);
+  --ring: rgba(128, 236, 255, 0.35);
+}
+
+body[data-accent="coral"] {
+  --accent-1: #ffb29d;
+  --accent-2: #ff7f6a;
+  --accent-3: #ffd9d0;
+  --accent-soft: rgba(255, 178, 157, 0.18);
+  --ring: rgba(255, 178, 157, 0.35);
+}
+
+body[data-accent="mint"] {
+  --accent-1: #9ef0c6;
+  --accent-2: #56d79a;
+  --accent-3: #d7f9ea;
+  --accent-soft: rgba(158, 240, 198, 0.18);
+  --ring: rgba(158, 240, 198, 0.35);
+}
+
+body[data-accent="plum"] {
+  --accent-1: #d9b3ff;
+  --accent-2: #9b6ff9;
+  --accent-3: #efd8ff;
+  --accent-soft: rgba(217, 179, 255, 0.18);
+  --ring: rgba(217, 179, 255, 0.35);
+}
+
+body[data-accent="gold"] {
+  --accent-1: #ffe38a;
+  --accent-2: #f6c54a;
+  --accent-3: #fff0b8;
+  --accent-soft: rgba(255, 227, 138, 0.18);
+  --ring: rgba(255, 227, 138, 0.35);
+}
+
+body[data-wallpaper="default"] {
+  background:
+    radial-gradient(circle at top left, rgba(123, 215, 255, 0.14), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(120, 236, 255, 0.12), transparent 24%),
+    linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 28%, var(--bg-3) 100%);
+}
+
+body[data-wallpaper="aurora"] {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(96, 196, 255, 0.25), transparent 28%),
+    radial-gradient(circle at 80% 20%, rgba(124, 230, 173, 0.2), transparent 28%),
+    radial-gradient(circle at 50% 100%, rgba(170, 132, 255, 0.2), transparent 34%),
+    linear-gradient(135deg, #020912 0%, #071a2e 26%, #0d203d 100%);
+}
+
+body[data-wallpaper="sunset"] {
+  background:
+    radial-gradient(circle at 15% 18%, rgba(255, 166, 122, 0.22), transparent 20%),
+    radial-gradient(circle at 65% 18%, rgba(255, 198, 109, 0.22), transparent 26%),
+    linear-gradient(135deg, #170d1d 0%, #2f1938 26%, #4d3248 62%, #6d4a56 100%);
+}
+
+body[data-transparency="low"] {
+  --glass-alpha: 0.56;
+  --panel-alpha: 0.62;
+}
+
+body[data-transparency="medium"] {
+  --glass-alpha: 0.72;
+  --panel-alpha: 0.8;
+}
+
+body[data-transparency="high"] {
+  --glass-alpha: 0.82;
+  --panel-alpha: 0.9;
+}
+
+body[data-accessibility="high-contrast"] {
+  --text: #ffffff;
+  --muted: #e7f0ff;
+  --stroke: rgba(255, 255, 255, 0.22);
+  --stroke-soft: rgba(255, 255, 255, 0.14);
+}
+
+body[data-accessibility="reduced-motion"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+body[data-text-size="small"] {
+  --text-scale: 0.9;
+}
+
+body[data-text-size="medium"] {
+  --text-scale: 1;
+}
+
+body[data-text-size="large"] {
+  --text-scale: 1.12;
+}
+
+body[data-window-scale="100"] {
+  --window-scale: 1;
+}
+
+body[data-window-scale="110"] {
+  --window-scale: 1.1;
+}
+
+body[data-window-scale="125"] {
+  --window-scale: 1.25;
+}
+
+body[data-window-style="glass"] {
+  --window-radius: 26px;
+  --window-shadow: 0 22px 52px rgba(6, 14, 24, 0.3);
+}
+
+body[data-window-style="classic"] {
+  --window-radius: 18px;
+  --window-shadow: 0 18px 36px rgba(6, 14, 24, 0.25);
+}
+
+body[data-window-style="minimal"] {
+  --window-radius: 12px;
+  --window-shadow: 0 12px 24px rgba(6, 14, 24, 0.18);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-ui);
+  font-size: calc(16px * var(--text-scale));
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-2) 28%, var(--bg-3) 100%);
+  color: var(--text);
+  transition: background 0.25s ease, color 0.25s ease;
+  overflow-x: hidden;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+body[data-taskbar="compact"] .dock {
+  padding: 9px 12px;
+  gap: 8px;
+}
+
+body[data-taskbar="autohide"] .dock {
+  transform: translateY(calc(100% + 18px));
+  transition: transform 0.25s ease;
+}
+
+body[data-taskbar="autohide"] .desktop-shell:hover .dock,
+body[data-taskbar="autohide"] .desktop-shell:focus-within .dock {
+  transform: translateY(0);
+}
+
+.desktop-shell {
+  position: relative;
+  width: min(1200px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 26px 0 32px;
+  transform: scale(var(--window-scale));
+  transform-origin: center top;
+}
+
+.glass,
+.panel,
+.hero-panel,
+.side-panel,
+.folder-card,
+.dock,
+.settings-panel,
+.power-panel {
+  background: rgba(18, 24, 32, calc(var(--glass-alpha) * 0.9));
+  border: 1px solid var(--stroke);
+  box-shadow: 0 18px 48px var(--shadow);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+body[data-theme="light"] .glass,
+body[data-theme="light"] .panel,
+body[data-theme="light"] .hero-panel,
+body[data-theme="light"] .side-panel,
+body[data-theme="light"] .folder-card,
+body[data-theme="light"] .dock,
+body[data-theme="light"] .settings-panel,
+body[data-theme="light"] .power-panel {
+  background: rgba(255, 255, 255, calc(var(--glass-alpha) * 0.82));
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border-radius: var(--window-radius);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--stroke-soft);
+  backdrop-filter: blur(12px);
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: #06131d;
+  font-weight: 900;
+  box-shadow: 0 10px 26px var(--accent-soft);
+}
+
+.app-label {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-subtitle,
+.system-meta,
+.greeting,
+.widget-label,
+.settings-kicker,
+.power-kicker,
+.section-pill {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.system-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.72rem;
+}
+
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(420px, 2fr) 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.panel,
+.hero-panel,
+.side-panel {
+  border-radius: var(--window-radius);
+  padding: 18px 18px 16px;
+}
+
+.weather-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 0;
+}
+
+.weather-icon {
+  font-size: 2rem;
+}
+
+.temp {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.condition {
+  color: var(--muted);
+}
+
+.mini-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.mini-stats > div {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--stroke-soft);
+}
+
+.metric {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.hero-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 260px;
+  padding: 22px 22px 18px;
+}
+
+.hero-panel h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(3.2rem, 6vw, 5.1rem);
+  line-height: 0.9;
+  letter-spacing: -0.07em;
+}
+
+.date-row {
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 540px);
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke-soft);
+}
+
+.search-bar input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+}
+
+.focus-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.focus-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.blue { background: #7bd7ff; }
+.dot.green { background: #7ce6ad; }
+.dot.pink { background: #ff8ec7; }
+
+.apps-section {
+  margin-top: 26px;
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.app-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 110px;
+  border: 1px solid var(--stroke-soft);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  text-align: center;
+  padding: 12px 8px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-tile:hover {
+  transform: translateY(-2px);
+  border-color: var(--stroke);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.tile-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.tile-blue { background: linear-gradient(135deg, rgba(123, 215, 255, 0.18), rgba(69, 119, 255, 0.08)); }
+.tile-cyan { background: linear-gradient(135deg, rgba(128, 236, 255, 0.18), rgba(73, 185, 255, 0.08)); }
+.tile-violet { background: linear-gradient(135deg, rgba(179, 157, 255, 0.18), rgba(117, 98, 245, 0.08)); }
+.tile-green { background: linear-gradient(135deg, rgba(124, 230, 173, 0.18), rgba(59, 162, 125, 0.08)); }
+.tile-orange { background: linear-gradient(135deg, rgba(255, 197, 124, 0.18), rgba(255, 136, 92, 0.08)); }
+.tile-pink { background: linear-gradient(135deg, rgba(255, 142, 199, 0.18), rgba(255, 106, 173, 0.08)); }
+.tile-red { background: linear-gradient(135deg, rgba(255, 162, 144, 0.18), rgba(255, 97, 88, 0.08)); }
+.tile-windows { background: linear-gradient(135deg, rgba(130, 187, 255, 0.18), rgba(133, 112, 255, 0.08)); }
+
+.files-gallery {
+  margin-top: 28px;
+  border-radius: var(--window-radius);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--stroke-soft);
+  padding: 18px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.files-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.files-tab,
+.theme-option,
+.font-option,
+.segment,
+.wallpaper-option,
+.accent-swatch,
+.action-btn,
+.settings-tab,
+.settings-close,
+.scroll-control,
+.dock-item {
+  border-radius: 12px;
+  border: 1px solid var(--stroke-soft);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  transition: all 0.18s ease;
+}
+
+.files-tab {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.files-tab.active,
+.segment.active,
+.theme-option.is-selected,
+.font-option.is-selected,
+.settings-tab.active,
+.wallpaper-option.active,
+.accent-swatch.active,
+.action-btn.primary {
+  background: linear-gradient(180deg, rgba(123, 215, 255, 0.24), rgba(123, 215, 255, 0.08));
+  border-color: rgba(123, 215, 255, 0.52);
+  box-shadow: inset 0 0 0 1px rgba(154, 216, 255, 0.25), 0 0 0 1px rgba(123, 215, 255, 0.06);
+}
+
+.folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.folder-card {
+  border-radius: 22px;
+  padding: 14px;
+}
+
+.folder-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.folder-icon {
+  font-size: 1.25rem;
+}
+
+.thumbnail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 8px;
+}
+
+.thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.folder-footer {
+  color: var(--muted);
+  margin-top: 12px;
+  font-size: 0.82rem;
+}
+
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-width: min(540px, calc(100vw - 28px));
+  padding: 10px 14px;
+  border-radius: 22px;
+  z-index: 12;
+}
+
+.dock-item {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--stroke-soft);
+  color: var(--text);
+  font-size: 1.3rem;
+}
+
+.dock-item.active,
+.dock-item:hover {
+  background: linear-gradient(180deg, rgba(123, 215, 255, 0.18), rgba(255, 255, 255, 0.04));
+  border-color: rgba(123, 215, 255, 0.4);
+}
+
+.power-button {
+  margin-left: 6px;
+}
+
+.scroll-controls {
+  position: fixed;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 10px;
+  z-index: 11;
+}
+
+.scroll-control {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.settings-overlay,
+.power-overlay,
+.blackout-screen,
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 7, 15, 0.48);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 30;
+}
+
+.settings-overlay.is-open,
+.power-overlay.is-open,
+.blackout-screen.is-visible,
+.lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings-panel,
+.power-panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 24px;
+  width: min(800px, calc(100vw - 30px));
+  overflow: hidden;
+  background: rgba(11, 17, 26, 0.9);
+}
+
+.power-panel {
+  width: min(520px, calc(100vw - 30px));
+}
+
+.settings-header,
+.power-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--stroke-soft);
+}
+
+.settings-title-wrap,
+.power-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-badge,
+.power-badge {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: #05161d;
+  font-weight: 900;
+}
+
+.settings-close {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
+
+.settings-body {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  min-height: 420px;
+}
+
+.settings-sidebar {
+  padding: 12px;
+  border-right: 1px solid var(--stroke-soft);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.settings-tabs {
+  display: grid;
+  gap: 8px;
+}
+
+.settings-tab {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+}
+
+.settings-main {
+  padding: 14px 16px 16px;
+}
+
+.settings-content {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-pane {
+  display: none;
+  gap: 12px;
+}
+
+.settings-pane.active {
+  display: grid;
+}
+
+.settings-group {
+  display: grid;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.settings-group-stack {
+  gap: 12px;
+}
+
+.settings-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.settings-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.theme-options,
+.font-options,
+.segmented-control,
+.swatch-grid,
+.wallpaper-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-option,
+.font-option,
+.segment,
+.wallpaper-option {
+  padding: 8px 10px;
+  font-weight: 600;
+}
+
+.wallpaper-option {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  min-width: 120px;
+}
+
+.wallpaper-preview {
+  display: block;
+  height: 72px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.preview-default {
+  background: linear-gradient(135deg, #020814 0%, #07121d 28%, #0f1d2a 100%);
+}
+
+.preview-aurora {
+  background: radial-gradient(circle at 20% 20%, rgba(96, 196, 255, 0.35), transparent 28%), radial-gradient(circle at 80% 20%, rgba(124, 230, 173, 0.25), transparent 28%), linear-gradient(135deg, #020912 0%, #071a2e 26%, #0d203d 100%);
+}
+
+.preview-sunset {
+  background: radial-gradient(circle at 15% 18%, rgba(255, 166, 122, 0.28), transparent 20%), radial-gradient(circle at 65% 18%, rgba(255, 198, 109, 0.25), transparent 26%), linear-gradient(135deg, #170d1d 0%, #2f1938 26%, #4d3248 62%, #6d4a56 100%);
+}
+
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.accent-swatch {
+  min-height: 42px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.accent-swatch span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 42px;
+  border-radius: inherit;
+}
+
+.power-actions {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.power-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-start;
+  min-height: 96px;
+  padding: 16px;
+  font-size: 1.06rem;
+  font-weight: 700;
+}
+
+.option-icon {
+  font-size: 1.7rem;
+}
+
+.power-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.action-btn {
+  padding: 9px 14px;
+  font-weight: 700;
+}
+
+.blackout-screen {
+  display: grid;
+  place-items: center;
+  background: rgba(3, 6, 12, 0.8);
+}
+
+.shutdown-text {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.lightbox {
+  display: grid;
+  place-items: center;
+  padding: 30px;
+}
+
+.lightbox img {
+  max-width: min(90vw, 1100px);
+  max-height: 80vh;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 26px 56px rgba(0,0,0,0.32);
+}
+
+.lightbox-close {
+  position: absolute;
+  right: 24px;
+  top: 22px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke-soft);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-size: 1.6rem;
+}
+
+@media (max-width: 980px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .apps-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .settings-body {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--stroke-soft);
   }
 }
 
-function syncSelectedState(buttons, selectedValue, keyName) {
-  buttons.forEach((button) => {
-    const isSelected = button.dataset[keyName] === selectedValue;
-    button.classList.toggle('selected', isSelected);
-    button.classList.toggle('active', isSelected);
-    button.setAttribute('aria-pressed', String(isSelected));
-    button.setAttribute('aria-selected', String(isSelected));
-  });
-}
+@media (max-width: 640px) {
+  .desktop-shell {
+    width: min(100vw - 18px, 1200px);
+    padding-top: 18px;
+  }
 
-function applyTheme(themeName) {
-  const theme = themeName === 'light' ? 'light' : 'dark';
-  document.body.dataset.theme = theme;
+  .topbar {
+    padding: 14px 14px;
+  }
 
-  const themeButtons = document.querySelectorAll('.theme-option');
-  themeButtons.forEach((button) => {
-    const isSelected = button.dataset.theme === theme;
-    button.classList.toggle('is-selected', isSelected);
-    button.classList.toggle('selected', isSelected);
-    button.setAttribute('aria-pressed', String(isSelected));
-    button.setAttribute('aria-selected', String(isSelected));
-  });
+  .system-meta {
+    display: none;
+  }
 
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-  } catch (error) {
-    // Ignore storage errors in restricted environments.
+  .apps-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dock {
+    gap: 8px;
+    min-width: calc(100vw - 16px);
+  }
+
+  .dock-item {
+    width: 45px;
+    height: 45px;
+  }
+
+  .settings-panel,
+  .power-panel {
+    width: min(calc(100vw - 18px), 800px);
   }
 }
 
-function applyAccent(accentName) {
-  const accent = accentName || 'blue';
-  const validAccent = ['blue', 'violet', 'green', 'rose', 'amber', 'aqua', 'coral', 'mint', 'plum', 'gold'].includes(accent) ? accent : 'blue';
-  document.body.dataset.accent = validAccent;
-
-  const accentSwatches = document.querySelectorAll('.accent-swatch');
-  accentSwatches.forEach((button) => {
-    const isActive = button.dataset.accent === validAccent;
-    button.classList.toggle('active', isActive);
-    button.classList.toggle('selected', isActive);
-    button.setAttribute('aria-pressed', String(isActive));
-    button.setAttribute('aria-selected', String(isActive));
-  });
-
-  const currentAccentLabel = document.getElementById('currentAccentLabel');
-  if (currentAccentLabel) {
-    currentAccentLabel.textContent = accentLabels[validAccent] || 'Blue Glow';
-  }
-
-  try {
-    localStorage.setItem(ACCENT_STORAGE_KEY, validAccent);
-  } catch (error) {
-    // Ignore storage errors in restricted environments.
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
-
-function applyFont(fontName) {
-  const font = ['default', 'gotham', 'fredoka', 'fredoka-one', 'adobe-clean', 'montserrat', 'poppins', 'quicksand', 'dm-sans', 'lato', 'nunito', 'raleway', 'ubuntu', 'oswald', 'playfair-display', 'orbitron', 'comfortaa', 'space-grotesk', 'libre-baskerville'].includes(fontName) ? fontName : 'default';
-  document.body.dataset.font = font;
-
-  const fontButtons = document.querySelectorAll('.font-option');
-  fontButtons.forEach((button) => {
-    const isSelected = button.dataset.font === font;
-    button.classList.toggle('is-selected', isSelected);
-    button.classList.toggle('selected', isSelected);
-    button.setAttribute('aria-pressed', String(isSelected));
-    button.setAttribute('aria-selected', String(isSelected));
-  });
-
-  const fontMap = {
-    default: '"Segoe UI", "Inter", sans-serif',
-    gotham: '"Gotham", "Segoe UI", sans-serif',
-    fredoka: '"Fredoka", "Segoe UI", sans-serif',
-    'fredoka-one': '"Fredoka One", "Fredoka", "Segoe UI", sans-serif',
-    'adobe-clean': '"Adobe Clean", "Segoe UI", sans-serif',
-    montserrat: '"Montserrat", "Segoe UI", sans-serif',
-    poppins: '"Poppins", "Segoe UI", sans-serif',
-    quicksand: '"Quicksand", "Segoe UI", sans-serif',
-    'dm-sans': '"DM Sans", "Segoe UI", sans-serif',
-    lato: '"Lato", "Segoe UI", sans-serif',
-    nunito: '"Nunito", "Segoe UI", sans-serif',
-    raleway: '"Raleway", "Segoe UI", sans-serif',
-    ubuntu: '"Ubuntu", "Segoe UI", sans-serif',
-    oswald: '"Oswald", "Segoe UI", sans-serif',
-    'playfair-display': '"Playfair Display", "Georgia", serif',
-    orbitron: '"Orbitron", "Segoe UI", sans-serif',
-    comfortaa: '"Comfortaa", "Segoe UI", sans-serif',
-    'space-grotesk': '"Space Grotesk", "Segoe UI", sans-serif',
-    'libre-baskerville': '"Libre Baskerville", "Georgia", serif'
-  };
-
-  document.documentElement.style.setProperty('--font-ui', fontMap[font] || fontMap.default);
-
-  try {
-    localStorage.setItem(FONT_STORAGE_KEY, font);
-  } catch (error) {
-    // Ignore storage errors in restricted environments.
-  }
-}
-
-function applyWallpaper(wallpaperName) {
-  const wallpaper = ['default', 'aurora', 'sunset'].includes(wallpaperName) ? wallpaperName : 'default';
-  document.body.dataset.wallpaper = wallpaper;
-
-  document.querySelectorAll('.wallpaper-option').forEach((button) => {
-    const isActive = button.dataset.wallpaper === wallpaper;
-    button.classList.toggle('active', isActive);
-    button.classList.toggle('selected', isActive);
-    button.setAttribute('aria-pressed', String(isActive));
-    button.setAttribute('aria-selected', String(isActive));
-  });
-
-  try {
-    localStorage.setItem(WALLPAPER_STORAGE_KEY, wallpaper);
-  } catch (error) {
-    // Ignore storage errors in restricted environments.
-  }
-}
-
-function applyTransparency(value) {
-  const transparency = ['low', 'medium', 'high'].includes(value) ? value : 'medium';
-  document.body.dataset.transparency = transparency;
-
-  document.querySelectorAll('[data-transparency]').forEach((button) => {
-    if (button.classList.contains('segment')) {
-      const isActive = button.dataset.transparency === transparency;
-      button.classList.toggle('active', isActive);
-      button.classList.toggle('selected', isActive);
-      button.setAttribute('aria-pressed', String(isActive));
-      button.setAttribute('aria-selected', String(isActive));
-    }
-  });
-
-  try {
-    localStorage.setItem(TRANSPARENCY_STORAGE_KEY, transparency);
-  } catch (error) {
-    // Ignore storage errors in restricted environments.
-  }
-}
-
-function applyTaskbar(mode) {
-  const taskbarMode = ['normal', 'compact', 'autohide'].includes(mode) ? mode : 'normal';
-  document.body.dataset.taskbar = taskbarMode;
-
-  document.querySelectorAll('[data-taskbar]').forEach((button) => {
-    if (button.classList.contains('segment')) {
-      const isActive = button.dataset.taskbar === taskbarMode;
-      button.classList.toggle('active', isActive);
-      button.classList.toggle('selected', isActive);
-      button.setAttribute('aria-pressed', String(isActive));
-      button.setAttribute('aria-selected', String(isActive));
-    }
-  });
-
-  try {
-    localStorage.setItem(TASKBAR_STORAGE_KEY, taskbarMode);
-  } catch (error) {
-    // Ignore storage errors in restricted environments.
-  }
-}
-
-function applyAccessibility(level) {
-  const accessibility = ['standard', 'high-contrast', 'reduced-motion'].includes(level) ? level : 'standard';
-  document.body.dataset.accessibility = accessibility;
-  applyMotionProfile();
-
-  document.querySelectorAll('[data-accessibility]').forEach((button) => {
-    if (button.classList.contains('segment')) {
-      const isActive = button.dataset.accessibility === accessibility;
-      button.classList.toggle('active', isActive);
-      button.classList.toggle('selected', isActive);
-      button.setAttribute('aria-pressed', String(isActive));
-      button.setAttribute('aria-selected', String(isActive));
-    }
-  });
-
-  try {
-    localStorage.setItem(ACCESSIBILITY_STORAGE_KEY, accessibility);
-  } catch (error) {
-    // Ignore storage errors in restricted environments.
-  }
-}
-
-function initTheme() {
-  const savedTheme = (() => {
-    try {
-      return localStorage.getItem(THEME_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-  })();
-
-  const savedAccent = (() => {
-    try {
-      return localStorage.getItem(ACCENT_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-  })();
-
-  const savedWallpaper = (() => {
-    try {
-      return localStorage.getItem(WALLPAPER_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-  })();
-
-  const savedTransparency = (() => {
-    try {
-      return localStorage.getItem(TRANSPARENCY_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-  })();
-
-  const savedTaskbar = (() => {
-    try {
-      return localStorage.getItem(TASKBAR_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-  })();
-
-  const savedAccessibility = (() => {
-    try {
-      return localStorage.getItem(ACCESSIBILITY_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-  })();
-
-  const savedFont = (() => {
-    try {
-      return localStorage.getItem(FONT_STORAGE_KEY);
-    } catch (error) {
-      return null;
-    }
-  })();
-
-  applyTheme(savedTheme || 'dark');
-  applyAccent(savedAccent || 'blue');
-  applyFont(savedFont || 'default');
-  applyWallpaper(savedWallpaper || 'default');
-  applyTransparency(savedTransparency || 'medium');
-  applyTaskbar(savedTaskbar || 'normal');
-  applyAccessibility(savedAccessibility || 'standard');
-
-  document.querySelectorAll('.theme-option').forEach((button) => {
-    button.addEventListener('click', () => applyTheme(button.dataset.theme));
-  });
-
-  document.querySelectorAll('.accent-swatch').forEach((button) => {
-    button.addEventListener('click', () => applyAccent(button.dataset.accent));
-  });
-
-  document.querySelectorAll('.font-option').forEach((button) => {
-    button.addEventListener('click', () => applyFont(button.dataset.font));
-  });
-
-  document.querySelectorAll('.wallpaper-option').forEach((button) => {
-    button.addEventListener('click', () => applyWallpaper(button.dataset.wallpaper));
-  });
-
-  document.querySelectorAll('[data-transparency]').forEach((button) => {
-    if (button.classList.contains('segment')) {
-      button.addEventListener('click', () => applyTransparency(button.dataset.transparency));
-    }
-  });
-
-  document.querySelectorAll('[data-taskbar]').forEach((button) => {
-    if (button.classList.contains('segment')) {
-      button.addEventListener('click', () => applyTaskbar(button.dataset.taskbar));
-    }
-  });
-
-  document.querySelectorAll('[data-accessibility]').forEach((button) => {
-    if (button.classList.contains('segment')) {
-      button.addEventListener('click', () => applyAccessibility(button.dataset.accessibility));
-    }
-  });
-}
-
-function initSettingsPanel() {
-  const settingsTile = document.getElementById('settingsTile');
-  const dockSettingsButton = document.getElementById('dockSettingsButton');
-  const settingsOverlay = document.getElementById('settingsOverlay');
-  const closeSettings = document.getElementById('closeSettings');
-  const settingsTabs = document.querySelectorAll('.settings-tab');
-  const settingsPanes = document.querySelectorAll('.settings-pane');
-
-  const openSettings = () => {
-    if (!settingsOverlay) return;
-    settingsOverlay.classList.add('is-open');
-    settingsOverlay.setAttribute('aria-hidden', 'false');
-  };
-
-  const closeSettingsPanel = () => {
-    if (!settingsOverlay) return;
-    settingsOverlay.classList.remove('is-open');
-    settingsOverlay.setAttribute('aria-hidden', 'true');
-  };
-
-  const setActiveSettingsTab = (tabName) => {
-    settingsTabs.forEach((tab, index) => {
-      const isActive = tab.dataset.settingsTab === tabName;
-      tab.classList.toggle('active', isActive);
-      tab.classList.toggle('selected', isActive);
-      tab.setAttribute('aria-selected', String(isActive));
-      tab.tabIndex = isActive ? 0 : -1;
-      tab.dataset.index = String(index);
-    });
-
-    settingsPanes.forEach((pane) => {
-      const isActive = pane.dataset.pane === tabName;
-      pane.classList.toggle('active', isActive);
-      pane.hidden = !isActive;
-      pane.setAttribute('aria-hidden', String(!isActive));
-    });
-  };
-
-  const moveSettingsTabFocus = (currentIndex, direction) => {
-    const visibleTabs = Array.from(settingsTabs);
-    if (!visibleTabs.length) return;
-    const nextIndex = (currentIndex + direction + visibleTabs.length) % visibleTabs.length;
-    const nextTab = visibleTabs[nextIndex];
-    if (nextTab) {
-      setActiveSettingsTab(nextTab.dataset.settingsTab);
-      nextTab.focus();
-    }
-  };
-
-  if (settingsTile) {
-    settingsTile.addEventListener('click', openSettings);
-  }
-
-  if (dockSettingsButton) {
-    dockSettingsButton.addEventListener('click', openSettings);
-  }
-
-  if (closeSettings) {
-    closeSettings.addEventListener('click', closeSettingsPanel);
-  }
-
-  if (settingsOverlay) {
-    settingsOverlay.addEventListener('click', (event) => {
-      if (event.target === settingsOverlay) {
-        closeSettingsPanel();
-      }
-    });
-  }
-
-  settingsTabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => setActiveSettingsTab(tab.dataset.settingsTab));
-    tab.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        moveSettingsTabFocus(index, 1);
-      }
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        moveSettingsTabFocus(index, -1);
-      }
-      if (event.key === 'Home') {
-        event.preventDefault();
-        const firstTab = settingsTabs[0];
-        if (firstTab) {
-          setActiveSettingsTab(firstTab.dataset.settingsTab);
-          firstTab.focus();
-        }
-      }
-      if (event.key === 'End') {
-        event.preventDefault();
-        const lastTab = settingsTabs[settingsTabs.length - 1];
-        if (lastTab) {
-          setActiveSettingsTab(lastTab.dataset.settingsTab);
-          lastTab.focus();
-        }
-      }
-    });
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && settingsOverlay && settingsOverlay.classList.contains('is-open')) {
-      closeSettingsPanel();
-    }
-  });
-
-  setActiveSettingsTab('general');
-}
-
-function initFileTabs() {
-  const tabs = document.querySelectorAll('.files-tab');
-  const cards = document.querySelectorAll('.folder-card');
-
-  if (!tabs.length || !cards.length) return;
-
-  const setActiveTab = (tabName) => {
-    const activeTabName = normalizeTabName(tabName);
-
-    tabs.forEach((tab, index) => {
-      const isActive = normalizeTabName(tab.dataset.tab) === activeTabName;
-      tab.classList.toggle('active', isActive);
-      tab.classList.toggle('selected', isActive);
-      tab.setAttribute('aria-selected', String(isActive));
-      tab.tabIndex = isActive ? 0 : -1;
-      tab.dataset.index = String(index);
-    });
-
-    cards.forEach((card) => {
-      const category = normalizeTabName(card.dataset.category);
-      const matches = activeTabName === 'all' || category === activeTabName;
-      card.style.display = matches ? '' : 'none';
-    });
-  };
-
-  const moveTabFocus = (currentIndex, direction) => {
-    const visibleTabs = Array.from(tabs);
-    const nextIndex = (currentIndex + direction + visibleTabs.length) % visibleTabs.length;
-    const nextTab = visibleTabs[nextIndex];
-    if (nextTab) {
-      setActiveTab(nextTab.dataset.tab);
-      nextTab.focus();
-    }
-  };
-
-  tabs.forEach((tab, index) => {
-    tab.addEventListener('click', () => setActiveTab(tab.dataset.tab));
-    tab.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        moveTabFocus(index, 1);
-      }
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        moveTabFocus(index, -1);
-      }
-      if (event.key === 'Home') {
-        event.preventDefault();
-        const firstTab = tabs[0];
-        if (firstTab) {
-          setActiveTab(firstTab.dataset.tab);
-          firstTab.focus();
-        }
-      }
-      if (event.key === 'End') {
-        event.preventDefault();
-        const lastTab = tabs[tabs.length - 1];
-        if (lastTab) {
-          setActiveTab(lastTab.dataset.tab);
-          lastTab.focus();
-        }
-      }
-    });
-  });
-
-  const photoTile = document.querySelector('[data-open-tab="photo"]');
-  if (photoTile) {
-    photoTile.addEventListener('click', () => {
-      setActiveTab('photo');
-      document.querySelector('.files-gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-
-  setActiveTab('all');
-}
-
-function initPhotoGallery() {
-  const photoTile = document.querySelector('[data-open-tab="photo"]');
-  const galleryOverlay = document.getElementById('photoGalleryOverlay');
-  const galleryImage = document.getElementById('photoGalleryImage');
-  const galleryThumbs = document.getElementById('photoGalleryThumbnails');
-  const galleryClose = document.getElementById('photoGalleryClose');
-  const galleryPrev = document.getElementById('photoGalleryPrev');
-  const galleryNext = document.getElementById('photoGalleryNext');
-  const photoItems = Array.from(document.querySelectorAll('.thumb-photo'));
-
-  const setActiveFileTab = (tabName) => {
-    const fileTabs = Array.from(document.querySelectorAll('.files-tab'));
-    const allCards = Array.from(document.querySelectorAll('.folder-card'));
-    const normalizedTabName = normalizeTabName(tabName);
-
-    fileTabs.forEach((tab) => {
-      const isActive = normalizeTabName(tab.dataset.tab) === normalizedTabName;
-      tab.classList.toggle('active', isActive);
-      tab.classList.toggle('selected', isActive);
-      tab.setAttribute('aria-selected', String(isActive));
-    });
-
-    allCards.forEach((card) => {
-      const category = normalizeTabName(card.dataset.category);
-      const matches = normalizedTabName === 'all' || category === normalizedTabName;
-      card.style.display = matches ? '' : 'none';
-    });
-  };
-
-  if (photoTile) {
-    photoTile.addEventListener('click', () => {
-      setActiveFileTab('photo');
-      document.querySelector('.files-gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-
-  if (!galleryOverlay || !galleryImage || !galleryThumbs || !photoItems.length) return;
-
-  let currentIndex = 0;
-
-  const renderGallery = () => {
-    const currentPhoto = photoItems[currentIndex];
-    if (!currentPhoto) return;
-
-    galleryImage.src = currentPhoto.src;
-    galleryImage.alt = currentPhoto.alt || 'Photo';
-
-    Array.from(galleryThumbs.children).forEach((thumb, index) => {
-      const isActive = index === currentIndex;
-      thumb.classList.toggle('active', isActive);
-      thumb.setAttribute('aria-pressed', String(isActive));
-    });
-  };
-
-  const openGallery = (index = 0) => {
-    currentIndex = (index + photoItems.length) % photoItems.length;
-    setActiveFileTab('photo');
-    renderGallery();
-    galleryOverlay.classList.add('is-open');
-    galleryOverlay.setAttribute('aria-hidden', 'false');
-  };
-
-  const closeGallery = () => {
-    galleryOverlay.classList.remove('is-open');
-    galleryOverlay.setAttribute('aria-hidden', 'true');
-  };
-
-  galleryThumbs.innerHTML = '';
-  photoItems.forEach((item, index) => {
-    const thumbButton = document.createElement('button');
-    thumbButton.type = 'button';
-    thumbButton.className = 'gallery-thumb';
-    thumbButton.setAttribute('aria-label', `View photo ${index + 1}`);
-    thumbButton.innerHTML = `<img src="${item.src}" alt="${item.alt || 'Gallery photo'}" />`;
-    thumbButton.addEventListener('click', () => openGallery(index));
-    galleryThumbs.appendChild(thumbButton);
-  });
-
-  if (galleryClose) {
-    galleryClose.addEventListener('click', closeGallery);
-  }
-
-  if (galleryPrev) {
-    galleryPrev.addEventListener('click', () => openGallery(currentIndex - 1));
-  }
-
-  if (galleryNext) {
-    galleryNext.addEventListener('click', () => openGallery(currentIndex + 1));
-  }
-
-  galleryOverlay.addEventListener('click', (event) => {
-    if (event.target === galleryOverlay) {
-      closeGallery();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && galleryOverlay.classList.contains('is-open')) {
-      closeGallery();
-    }
-    if (event.key === 'ArrowRight' && galleryOverlay.classList.contains('is-open')) {
-      openGallery(currentIndex + 1);
-    }
-    if (event.key === 'ArrowLeft' && galleryOverlay.classList.contains('is-open')) {
-      openGallery(currentIndex - 1);
-    }
-  });
-
-  renderGallery();
-}
-
-function initScrollControls() {
-  const scrollUp = document.getElementById('scrollUp');
-  const scrollDown = document.getElementById('scrollDown');
-
-  if (scrollUp) {
-    scrollUp.addEventListener('click', () => {
-      window.scrollBy({ top: -260, behavior: 'smooth' });
-    });
-  }
-
-  if (scrollDown) {
-    scrollDown.addEventListener('click', () => {
-      window.scrollBy({ top: 260, behavior: 'smooth' });
-    });
-  }
-}
-
-function initPowerMenu() {
-  const powerButton = document.getElementById('powerButton');
-  const powerOverlay = document.getElementById('powerOverlay');
-  const closePowerMenu = document.getElementById('closePowerMenu');
-  const confirmPowerAction = document.getElementById('confirmPowerAction');
-  const blackoutScreen = document.getElementById('blackoutScreen');
-  const powerOptions = document.querySelectorAll('.power-option');
-
-  if (!powerButton && !powerOverlay && !confirmPowerAction && !blackoutScreen) {
-    return;
-  }
-
-  let selectedPowerAction = 'shutdown';
-
-  const setPowerAction = (action) => {
-    selectedPowerAction = action;
-    powerOptions.forEach((option) => {
-      const isSelected = option.dataset.action === action;
-      option.classList.toggle('selected', isSelected);
-      option.setAttribute('aria-pressed', String(isSelected));
-    });
-  };
-
-  const openPowerMenu = () => {
-    if (!powerOverlay) return;
-    powerOverlay.classList.add('is-open');
-    powerOverlay.setAttribute('aria-hidden', 'false');
-  };
-
-  const closePowerMenuDialog = () => {
-    if (!powerOverlay) return;
-    powerOverlay.classList.remove('is-open');
-    powerOverlay.setAttribute('aria-hidden', 'true');
-  };
-
-  const triggerPowerAction = () => {
-    if (!blackoutScreen) return;
-
-    const labelMap = {
-      shutdown: 'Shutting down...',
-      sleep: 'Sleeping...',
-      restart: 'Restarting...'
-    };
-
-    const label = labelMap[selectedPowerAction] || 'Shutting down...';
-    const blackoutText = blackoutScreen.querySelector('.shutdown-text');
-
-    if (blackoutText) {
-      blackoutText.textContent = label;
-    }
-
-    closePowerMenuDialog();
-    blackoutScreen.classList.add('is-visible');
-    blackoutScreen.setAttribute('aria-hidden', 'false');
-  };
-
-  if (powerButton) {
-    powerButton.addEventListener('click', (event) => {
-      event.preventDefault();
-      openPowerMenu();
-    });
-  }
-
-  if (closePowerMenu) {
-    closePowerMenu.addEventListener('click', closePowerMenuDialog);
-  }
-
-  if (confirmPowerAction) {
-    confirmPowerAction.addEventListener('click', triggerPowerAction);
-  }
-
-  if (powerOverlay) {
-    powerOverlay.addEventListener('click', (event) => {
-      if (event.target === powerOverlay) {
-        closePowerMenuDialog();
-      }
-    });
-  }
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && powerOverlay && powerOverlay.classList.contains('is-open')) {
-      closePowerMenuDialog();
-    }
-  });
-
-  powerOptions.forEach((option) => {
-    option.addEventListener('click', () => setPowerAction(option.dataset.action));
-  });
-
-  setPowerAction(selectedPowerAction);
-}
-
-function initImageLightbox() {
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImage = document.getElementById('lightboxImage');
-  const closeButton = document.getElementById('lightboxClose');
-  const photoItems = document.querySelectorAll('.thumb-photo');
-
-  if (!lightbox || !lightboxImage || !photoItems.length) return;
-
-  const openLightbox = (src) => {
-    lightboxImage.src = src;
-    lightbox.classList.add('is-open');
-    lightbox.setAttribute('aria-hidden', 'false');
-  };
-
-  const closeLightbox = () => {
-    lightbox.classList.remove('is-open');
-    lightbox.setAttribute('aria-hidden', 'true');
-    lightboxImage.src = '';
-  };
-
-  photoItems.forEach((item) => {
-    item.addEventListener('click', () => openLightbox(item.src));
-  });
-
-  if (closeButton) {
-    closeButton.addEventListener('click', closeLightbox);
-  }
-
-  lightbox.addEventListener('click', (event) => {
-    if (event.target === lightbox) {
-      closeLightbox();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
-      closeLightbox();
-    }
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  updateClock();
-  initSettingsPanel();
-  initFileTabs();
-  initPhotoGallery();
-  initScrollControls();
-  initPowerMenu();
-  initImageLightbox();
-  setInterval(updateClock, 30000);
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

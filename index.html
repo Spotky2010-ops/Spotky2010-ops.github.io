@@ -1,511 +1,752 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Window 12 Home</title>
-    <meta name="description" content="Windows-inspired home screen concept for Spotky2010-ops.github.io" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Fredoka+One&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Lato:wght@400;700&family=Nunito:wght@400;600;700&family=Raleway:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&family=Oswald:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&family=Comfortaa:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body data-theme="dark" data-wallpaper="default" data-accent="blue" data-transparency="medium" data-taskbar="normal" data-accessibility="standard" data-font="default">
-    <div class="background-glow glow-one"></div>
-    <div class="background-glow glow-two"></div>
+const timeElement = document.getElementById('time');
+const dateElement = document.getElementById('date');
+const greetingElement = document.getElementById('greeting');
 
-    <div class="desktop-shell">
-      <header class="topbar">
-        <div class="brand-wrap">
-          <div class="brand-mark">W</div>
-          <div>
-            <div class="app-label">Window 12</div>
-            <div class="brand-subtitle">Home</div>
-          </div>
-        </div>
+const THEME_STORAGE_KEY = 'window12-theme';
+const ACCENT_STORAGE_KEY = 'window12-accent';
+const WALLPAPER_STORAGE_KEY = 'window12-wallpaper';
+const TRANSPARENCY_STORAGE_KEY = 'window12-transparency';
+const TASKBAR_STORAGE_KEY = 'window12-taskbar';
+const ACCESSIBILITY_STORAGE_KEY = 'window12-accessibility';
+const FONT_STORAGE_KEY = 'window12-font';
+const TEXT_SIZE_STORAGE_KEY = 'window12-text-size';
+const WINDOW_SCALE_STORAGE_KEY = 'window12-window-scale';
+const WINDOW_STYLE_STORAGE_KEY = 'window12-window-style';
 
-        <div class="system-meta">
-          <span>Wi‑Fi</span>
-          <span>Battery 92%</span>
-          <span>12:34</span>
-        </div>
-      </header>
+const accentLabels = {
+  blue: 'Blue Glow',
+  violet: 'Violet Pulse',
+  green: 'Green Refresh',
+  rose: 'Rose Glow',
+  amber: 'Amber Gold',
+  aqua: 'Aqua Drift',
+  coral: 'Coral Sunset',
+  mint: 'Mint Pop',
+  plum: 'Plum Night',
+  gold: 'Gold Leaf'
+};
 
-      <main class="home-layout">
-        <aside class="glass panel side-panel left-panel">
-          <div class="widget-label">Today</div>
-          <div class="weather-box">
-            <div class="weather-icon">☀</div>
-            <div>
-              <div class="temp">24°</div>
-              <div class="condition">Clear</div>
-            </div>
-          </div>
+const validThemes = ['dark', 'light', 'midnight'];
+const validWallpapers = ['default', 'aurora', 'sunset'];
+const validAccents = ['blue', 'violet', 'green', 'rose', 'amber', 'aqua', 'coral', 'mint', 'plum', 'gold'];
+const validTextSizes = ['small', 'medium', 'large'];
+const validWindowScales = ['100', '110', '125'];
+const validWindowStyles = ['glass', 'classic', 'minimal'];
 
-          <div class="mini-stats">
-            <div>
-              <span class="metric">14</span>
-              <span>tasks</span>
-            </div>
-            <div>
-              <span class="metric">6</span>
-              <span>alerts</span>
-            </div>
-          </div>
-        </aside>
+function normalizeTabName(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_]+/g, ' ')
+    .replace(/[^a-z0-9 ]+/g, '');
+}
 
-        <section class="hero-panel glass">
-          <div class="greeting" id="greeting">Good evening</div>
-          <h1 id="time">08:34</h1>
-          <div class="date-row" id="date">Tuesday, October 28</div>
+function applyMotionProfile() {
+  const reducedMotion = document.body.dataset.accessibility === 'reduced-motion';
+  document.body.classList.toggle('reduced-motion', reducedMotion);
+}
 
-          <label class="search-bar" aria-label="Search">
-            <span class="search-icon">⌕</span>
-            <input type="text" value="Search apps, files, settings" aria-label="Search apps" />
-          </label>
-        </section>
+function updateClock() {
+  if (!timeElement || !dateElement || !greetingElement) return;
 
-        <aside class="glass panel side-panel right-panel">
-          <div class="widget-label">Focus</div>
-          <ul class="focus-list">
-            <li><span class="dot blue"></span> Design review</li>
-            <li><span class="dot green"></span> Build sprint</li>
-            <li><span class="dot pink"></span> Team sync</li>
-          </ul>
-        </aside>
-      </main>
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const day = now.toLocaleDateString(undefined, { weekday: 'long' });
+  const monthDay = now.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
 
-      <section class="apps-section">
-        <div class="apps-grid">
-          <button class="app-tile tile-blue" type="button">
-            <span class="tile-icon">📷</span>
-            <span>Camera</span>
-          </button>
-          <button class="app-tile tile-cyan" data-open-tab="all" type="button">
-            <span class="tile-icon">▣</span>
-            <span>Files</span>
-          </button>
-          <button class="app-tile tile-violet" type="button">
-            <span class="tile-icon">⌘</span>
-            <span>Store</span>
-          </button>
-          <button class="app-tile tile-green" type="button">
-            <span class="tile-icon">⌬</span>
-            <span>Terminal</span>
-          </button>
-          <button class="app-tile tile-orange" id="settingsTile" type="button">
-            <span class="tile-icon">⚙</span>
-            <span>Settings</span>
-          </button>
-          <button class="app-tile tile-pink" type="button">
-            <span class="tile-icon">🎮</span>
-            <span>Games</span>
-          </button>
-          <button class="app-tile tile-red" data-open-tab="photo" type="button">
-            <span class="tile-icon">◌</span>
-            <span>Photos</span>
-          </button>
-          <button class="app-tile tile-windows" type="button">
-            <span class="tile-icon">⊞</span>
-            <span>Windows App</span>
-          </button>
-        </div>
-      </section>
+  timeElement.textContent = `${hours}:${minutes}`;
+  dateElement.textContent = `${day}, ${monthDay}`;
 
-      <section class="files-gallery" id="filesGallery" aria-label="Files app folders">
-        <div class="section-header">
-          <div class="widget-label">Files</div>
-          <span class="section-pill">7 folders</span>
-        </div>
+  const hour = now.getHours();
 
-        <div class="files-tabs" aria-label="Files tabs">
-          <button class="files-tab active" data-tab="all" type="button">All</button>
-          <button class="files-tab" data-tab="photo" type="button">Photo</button>
-          <button class="files-tab" data-tab="cat" type="button">Cat</button>
-          <button class="files-tab" data-tab="dog" type="button">Dog</button>
-          <button class="files-tab" data-tab="robot" type="button">Robot</button>
-          <button class="files-tab" data-tab="everyday rewards" type="button">Everyday Rewards</button>
-          <button class="files-tab" data-tab="ALDI" type="button">ALDI</button>
-          <button class="files-tab" data-tab="Uber" type="button">Uber</button>
-        </div>
+  if (hour < 12) {
+    greetingElement.textContent = 'Good morning';
+  } else if (hour < 18) {
+    greetingElement.textContent = 'Good afternoon';
+  } else {
+    greetingElement.textContent = 'Good evening';
+  }
+}
 
-        <div class="folder-grid">
-          <article class="folder-card" data-category="photo">
-            <div class="folder-top">
-              <div class="folder-icon">📁</div>
-              <span>Photo</span>
-            </div>
-            <div class="thumbnail-grid">
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1511044568932-338cba0ad803?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1589883661923-6476cb0ae9f2?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 6" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b5?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=900&q=80" alt="Dog photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 6" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1617791160536-7b9a0f5f3d4b?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1564466809058-bf4114d55352?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 6" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/0yvQtgTb/20260830-153749.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/JWdDX12L/20260504-164607.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/3mQMHRnw/20260322-164525.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/QF0qpLy9/pexels-mitchell-landow-2164064156-39420146.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/pjPhdWBR/pexels-mitchell-landow-2164064156-39420251.jpg" alt="Everyday Rewards photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/4g9DB383/20251108-172427.jpg" alt="Everyday Rewards photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/238kBGxx/20251108-170841.jpg" alt="Everyday Rewards photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/XrDRB6Qw/20251108-172353.jpg" alt="Everyday Rewards photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/Lhgrw31f/1791487641578.jpg" alt="Everyday Rewards photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/7NRyTYby/20251108-170343.jpg" alt="Everyday Rewards photo 6" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/k2D7qM2B/pexels-mitchell-landow-2163948975-39328374-1.jpg" alt="ALDI photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/39N9QTry/20260122-135628.jpg" alt="Uber photo 1" loading="lazy" />
-            </div>
-            <div class="folder-footer">30 photos</div>
-          </article>
+function syncSelectedState(buttons, selectedValue, keyName) {
+  buttons.forEach((button) => {
+    const isSelected = button.dataset[keyName] === selectedValue;
+    button.classList.toggle('selected', isSelected);
+    button.classList.toggle('active', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+    button.setAttribute('aria-selected', String(isSelected));
+  });
+}
 
-          <article class="folder-card" data-category="cat">
-            <div class="folder-top">
-              <div class="folder-icon">📁</div>
-              <span>Cat</span>
-            </div>
-            <div class="thumbnail-grid">
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1511044568932-338cba0ad803?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1589883661923-6476cb0ae9f2?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 6" loading="lazy" />
-            </div>
-            <div class="folder-footer">6 photos</div>
-          </article>
+function applyTheme(themeName) {
+  const theme = validThemes.includes(themeName) ? themeName : 'dark';
+  document.body.dataset.theme = theme;
 
-          <article class="folder-card" data-category="dog">
-            <div class="folder-top">
-              <div class="folder-icon">📁</div>
-              <span>Dog</span>
-            </div>
-            <div class="thumbnail-grid">
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b5?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=900&q=80" alt="Dog photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 6" loading="lazy" />
-            </div>
-            <div class="folder-footer">6 photos</div>
-          </article>
+  const themeButtons = document.querySelectorAll('.theme-option');
+  themeButtons.forEach((button) => {
+    const isSelected = button.dataset.theme === theme;
+    button.classList.toggle('is-selected', isSelected);
+    button.classList.toggle('selected', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+    button.setAttribute('aria-selected', String(isSelected));
+  });
 
-          <article class="folder-card" data-category="robot">
-            <div class="folder-top">
-              <div class="folder-icon">📁</div>
-              <span>Roborock</span>
-            </div>
-            <div class="thumbnail-grid">
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1617791160536-7b9a0f5f3d4b?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1564466809058-bf4114d55352?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 6" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/0yvQtgTb/20260830-153749.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/JWdDX12L/20260504-164607.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/3mQMHRnw/20260322-164525.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/QF0qpLy9/pexels-mitchell-landow-2164064156-39420146.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 4" loading="lazy" />
-            </div>
-            <div class="folder-footer">10 photos</div>
-          </article>
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
 
-          <article class="folder-card" data-category="everyday rewards">
-            <div class="folder-top">
-              <div class="folder-icon">📁</div>
-              <span>Everyday Rewards</span>
-            </div>
-            <div class="thumbnail-grid">
-              <img class="thumb thumb-photo" src="https://i.ibb.co/pjPhdWBR/pexels-mitchell-landow-2164064156-39420251.jpg" alt="Everyday Rewards photo 1" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/4g9DB383/20251108-172427.jpg" alt="Everydays Rewards photo 2" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/238kBGxx/20251108-170841.jpg" alt="Everydays Rewards photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/XrDRB6Qw/20251108-172353.jpg" alt="Everydays Rewards photo 4" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/Lhgrw31f/1791487641578.jpg" alt="Everydays Rewards photo 5" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/7NRyTYby/20251108-170343.jpg" alt="Everydays Rewards photo 6" loading="lazy" />
-            </div>
-            <div class="folder-footer">6 photos</div>
-          </article>
+function applyAccent(accentName) {
+  const accent = validAccents.includes(accentName) ? accentName : 'blue';
+  document.body.dataset.accent = accent;
 
-          <article class="folder-card" data-category="aldi">
-            <div class="folder-top">
-              <div class="folder-icon">📁</div>
-              <span>ALDI</span>
-            </div>
-            <div class="thumbnail-grid">
-              <img class="thumb thumb-photo" src="https://i.ibb.co/k2D7qM2B/pexels-mitchell-landow-2163948975-39328374-1.jpg" alt="ALDI photo 1" loading="lazy" />
-            </div>
-            <div class="folder-footer">1 photo</div>
-          </article>
+  const accentSwatches = document.querySelectorAll('.accent-swatch');
+  accentSwatches.forEach((button) => {
+    const isActive = button.dataset.accent === accent;
+    button.classList.toggle('active', isActive);
+    button.classList.toggle('selected', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+    button.setAttribute('aria-selected', String(isActive));
+  });
 
-          <article class="folder-card" data-category="uber">
-            <div class="folder-top">
-              <div class="folder-icon">📁</div>
-              <span>Uber</span>
-            </div>
-            <div class="thumbnail-grid">
-              <img class="thumb thumb-photo" src="https://i.ibb.co/39N9QTry/20260122-135628.jpg" alt="Uber photo 1" loading="lazy" />
-            </div>
-            <div class="folder-footer">1 photo</div>
-          </article>
-        </div>
-      </section>
+  const currentAccentLabel = document.getElementById('currentAccentLabel');
+  if (currentAccentLabel) {
+    currentAccentLabel.textContent = accentLabels[accent] || 'Blue Glow';
+  }
 
-      <nav class="dock glass" aria-label="Dock">
-        <button class="dock-item active" aria-label="Home" type="button">
-          <span>⌂</span>
-        </button>
-        <button class="dock-item" aria-label="Explorer" type="button">
-          <span>▣</span>
-        </button>
-        <button class="dock-item" aria-label="" type="button">
-          <span>📷</span>
-        </button>
-        <button class="dock-item" aria-label="Games" type="button">
-          <span>🎮</span>
-        </button>
-        <button class="dock-item" id="dockSettingsButton" aria-label="Settings" type="button">
-          <span>⚙</span>
-        </button>
-        <button id="powerButton" class="dock-item power-button" aria-label="Power options" title="Power options" type="button">
-          <span>⏻</span>
-        </button>
-      </nav>
-    </div>
+  try {
+    localStorage.setItem(ACCENT_STORAGE_KEY, accent);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
 
-    <div class="scroll-controls" aria-label="Scroll controls">
-      <button class="scroll-control" id="scrollUp" type="button" aria-label="Scroll up">↑</button>
-      <button class="scroll-control" id="scrollDown" type="button" aria-label="Scroll down">↓</button>
-    </div>
+function applyFont(fontName) {
+  const font = [
+    'default', 'gotham', 'fredoka', 'fredoka-one', 'adobe-clean', 'montserrat', 'poppins', 'quicksand',
+    'dm-sans', 'lato', 'nunito', 'raleway', 'ubuntu', 'oswald', 'playfair-display', 'orbitron',
+    'comfortaa', 'space-grotesk', 'libre-baskerville'
+  ].includes(fontName) ? fontName : 'default';
 
-    <div class="settings-overlay" id="settingsOverlay" aria-hidden="true">
-      <div class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-        <div class="settings-header">
-          <div class="settings-title-wrap">
-            <div class="settings-badge">⚙</div>
-            <div>
-              <div class="settings-kicker">System</div>
-              <h2 id="settingsTitle">Settings</h2>
-            </div>
-          </div>
-          <button class="settings-close" id="closeSettings" aria-label="Close settings" type="button">×</button>
-        </div>
+  document.body.dataset.font = font;
 
-        <div class="settings-body">
-          <aside class="settings-sidebar" aria-label="Settings categories">
-            <div class="settings-tabs" aria-label="Settings tabs">
-              <button class="settings-tab active" type="button" data-settings-tab="general">General</button>
-              <button class="settings-tab" type="button" data-settings-tab="personalization">Personalization</button>
-              <button class="settings-tab" type="button" data-settings-tab="sound">Sound</button>
-              <button class="settings-tab" type="button" data-settings-tab="accessibility">Accessibility</button>
-              <button class="settings-tab" type="button" data-settings-tab="customsize">Custom size</button>
-            </div>
-          </aside>
+  const fontButtons = document.querySelectorAll('.font-option');
+  fontButtons.forEach((button) => {
+    const isSelected = button.dataset.font === font;
+    button.classList.toggle('is-selected', isSelected);
+    button.classList.toggle('selected', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+    button.setAttribute('aria-selected', String(isSelected));
+  });
 
-          <div class="settings-main">
-            <div class="settings-content">
-              <section class="settings-pane active" data-pane="general">
-                <div class="settings-group">
-                  <label class="settings-label">Desktop mode</label>
-                  <div class="settings-value">Window 12</div>
-                </div>
-                <div class="settings-group">
-                  <label class="settings-label">Accent color</label>
-                  <div class="settings-value" id="currentAccentLabel">Blue Glow</div>
-                </div>
-                <div class="settings-group">
-                  <label class="settings-label">Notifications</label>
-                  <div class="settings-value">Enabled</div>
-                </div>
-              </section>
+  const fontMap = {
+    default: '"Segoe UI", "Inter", sans-serif',
+    gotham: '"Gotham", "Segoe UI", sans-serif',
+    fredoka: '"Fredoka", "Segoe UI", sans-serif',
+    'fredoka-one': '"Fredoka One", "Fredoka", "Segoe UI", sans-serif',
+    'adobe-clean': '"Adobe Clean", "Segoe UI", sans-serif',
+    montserrat: '"Montserrat", "Segoe UI", sans-serif',
+    poppins: '"Poppins", "Segoe UI", sans-serif',
+    quicksand: '"Quicksand", "Segoe UI", sans-serif',
+    'dm-sans': '"DM Sans", "Segoe UI", sans-serif',
+    lato: '"Lato", "Segoe UI", sans-serif',
+    nunito: '"Nunito", "Segoe UI", sans-serif',
+    raleway: '"Raleway", "Segoe UI", sans-serif',
+    ubuntu: '"Ubuntu", "Segoe UI", sans-serif',
+    oswald: '"Oswald", "Segoe UI", sans-serif',
+    'playfair-display': '"Playfair Display", "Georgia", serif',
+    orbitron: '"Orbitron", "Segoe UI", sans-serif',
+    comfortaa: '"Comfortaa", "Segoe UI", sans-serif',
+    'space-grotesk': '"Space Grotesk", "Segoe UI", sans-serif',
+    'libre-baskerville': '"Libre Baskerville", "Georgia", serif'
+  };
 
-              <section class="settings-pane" data-pane="personalization">
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">Theme</label>
-                  <div class="theme-options" role="group" aria-label="Theme chooser">
-                    <button class="theme-option is-selected" type="button" data-theme="dark">Dark</button>
-                    <button class="theme-option" type="button" data-theme="light">Light</button>
-                  </div>
-                </div>
+  document.documentElement.style.setProperty('--font-ui', fontMap[font] || fontMap.default);
 
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">App font</label>
-                  <div class="font-options" role="group" aria-label="App font chooser">
-                    <button class="font-option is-selected" type="button" data-font="default">Default</button>
-                    <button class="font-option" type="button" data-font="gotham">Gotham</button>
-                    <button class="font-option" type="button" data-font="fredoka-one">Fredoka One</button>
-                    <button class="font-option" type="button" data-font="montserrat">Montserrat</button>
-                    <button class="font-option" type="button" data-font="poppins">Poppins</button>
-                    <button class="font-option" type="button" data-font="quicksand">Quicksand</button>
-                    <button class="font-option" type="button" data-font="dm-sans">DM Sans</button>
-                    <button class="font-option" type="button" data-font="lato">Lato</button>
-                    <button class="font-option" type="button" data-font="nunito">Nunito</button>
-                    <button class="font-option" type="button" data-font="raleway">Raleway</button>
-                    <button class="font-option" type="button" data-font="ubuntu">Ubuntu</button>
-                    <button class="font-option" type="button" data-font="oswald">Oswald</button>
-                    <button class="font-option" type="button" data-font="playfair-display">Playfair Display</button>
-                    <button class="font-option" type="button" data-font="orbitron">Orbitron</button>
-                    <button class="font-option" type="button" data-font="comfortaa">Comfortaa</button>
-                    <button class="font-option" type="button" data-font="space-grotesk">Space Grotesk</button>
-                    <button class="font-option" type="button" data-font="libre-baskerville">Libre Baskerville</button>
-                  </div>
-                </div>
+  try {
+    localStorage.setItem(FONT_STORAGE_KEY, font);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
 
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">Accent</label>
-                  <div class="swatch-grid" aria-label="Accent color chooser">
-                    <button class="accent-swatch active" type="button" data-accent="blue" aria-label="Blue accent" title="Blue"><span style="background: linear-gradient(135deg, #7bd7ff, #6ad0ff);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="violet" aria-label="Violet accent" title="Violet"><span style="background: linear-gradient(135deg, #b39dff, #8469fd);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="green" aria-label="Green accent" title="Green"><span style="background: linear-gradient(135deg, #7de9bd, #56c790);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="rose" aria-label="Rose accent" title="Rose"><span style="background: linear-gradient(135deg, #ff8ec7, #ff5ea8);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="amber" aria-label="Amber accent" title="Amber"><span style="background: linear-gradient(135deg, #ffd36a, #ffb447);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="aqua" aria-label="Aqua accent" title="Aqua"><span style="background: linear-gradient(135deg, #80ecff, #48d7f7);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="coral" aria-label="Coral accent" title="Coral"><span style="background: linear-gradient(135deg, #ffb29d, #ff7f6a);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="mint" aria-label="Mint accent" title="Mint"><span style="background: linear-gradient(135deg, #9ef0c6, #56d79a);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="plum" aria-label="Plum accent" title="Plum"><span style="background: linear-gradient(135deg, #d9b3ff, #9b6ff9);"></span></button>
-                    <button class="accent-swatch" type="button" data-accent="gold" aria-label="Gold accent" title="Gold"><span style="background: linear-gradient(135deg, #ffe38a, #f6c54a);"></span></button>
-                  </div>
-                </div>
+function applyWallpaper(wallpaperName) {
+  const wallpaper = validWallpapers.includes(wallpaperName) ? wallpaperName : 'default';
+  document.body.dataset.wallpaper = wallpaper;
 
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">Wallpaper</label>
-                  <div class="wallpaper-grid">
-                    <button class="wallpaper-option active" type="button" data-wallpaper="default">
-                      <span class="wallpaper-preview preview-default"></span>
-                      <small>Default</small>
-                    </button>
-                    <button class="wallpaper-option" type="button" data-wallpaper="aurora">
-                      <span class="wallpaper-preview preview-aurora"></span>
-                      <small>Aurora</small>
-                    </button>
-                    <button class="wallpaper-option" type="button" data-wallpaper="sunset">
-                      <span class="wallpaper-preview preview-sunset"></span>
-                      <small>Sunset</small>
-                    </button>
-                  </div>
-                </div>
+  document.querySelectorAll('.wallpaper-option').forEach((button) => {
+    const isActive = button.dataset.wallpaper === wallpaper;
+    button.classList.toggle('active', isActive);
+    button.classList.toggle('selected', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+    button.setAttribute('aria-selected', String(isActive));
+  });
 
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">Transparency</label>
-                  <div class="segmented-control" role="group" aria-label="Transparency level">
-                    <button class="segment active" type="button" data-transparency="low">Low</button>
-                    <button class="segment" type="button" data-transparency="medium">Medium</button>
-                    <button class="segment" type="button" data-transparency="high">High</button>
-                  </div>
-                </div>
+  try {
+    localStorage.setItem(WALLPAPER_STORAGE_KEY, wallpaper);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
 
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">Taskbar</label>
-                  <div class="segmented-control" role="group" aria-label="Taskbar style">
-                    <button class="segment active" type="button" data-taskbar="normal">Normal</button>
-                    <button class="segment" type="button" data-taskbar="compact">Compact</button>
-                    <button class="segment" type="button" data-taskbar="autohide">Auto-hide</button>
-                  </div>
-                </div>
-              </section>
+function applyTransparency(value) {
+  const transparency = ['low', 'medium', 'high'].includes(value) ? value : 'medium';
+  document.body.dataset.transparency = transparency;
 
-              <section class="settings-pane" data-pane="sound">
-                <div class="settings-group">
-                  <label class="settings-label">System sounds (Never Released)</label>
-                  <button class="toggle-btn is-on" type="button" aria-pressed="true">
-                    <span class="toggle-knob"></span>
-                  </button>
-                </div>
-                <div class="settings-group">
-                  <label class="settings-label">Volume</label>
-                  <div class="volume-meter" aria-label="Volume level">
-                    <span class="volume-fill"></span>
-                  </div>
-                </div>
-              </section>
+  document.querySelectorAll('[data-transparency]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.transparency === transparency;
+      button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
+    }
+  });
 
-              <section class="settings-pane" data-pane="accessibility">
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">Accessibility profile</label>
-                  <div class="segmented-control" role="group" aria-label="Accessibility level">
-                    <button class="segment active" type="button" data-accessibility="standard">Standard</button>
-                    <button class="segment" type="button" data-accessibility="high-contrast">High contrast</button>
-                    <button class="segment" type="button" data-accessibility="reduced-motion">Reduced motion</button>
-                  </div>
-                </div>
-                <div class="settings-group">
-                  <label class="settings-label">Text size</label>
-                  <div class="settings-value">100%</div>
-                </div>
-              </section>
+  try {
+    localStorage.setItem(TRANSPARENCY_STORAGE_KEY, transparency);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
 
-              <section class="settings-pane" data-pane="customsize">
-                <div class="settings-group settings-group-stack">
-                  <label class="settings-label">Window scale</label>
-                  <div class="segmented-control" role="group" aria-label="Window scale">
-                    <button class="segment active" type="button">100%</button>
-                    <button class="segment" type="button">110%</button>
-                    <button class="segment" type="button">125%</button>
-                  </div>
-                </div>
-                <div class="settings-group">
-                  <label class="settings-label">UI density</label>
-                  <div class="settings-value">Comfortable</div>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+function applyTaskbar(mode) {
+  const taskbarMode = ['normal', 'compact', 'autohide'].includes(mode) ? mode : 'normal';
+  document.body.dataset.taskbar = taskbarMode;
 
-    <div class="power-overlay" id="powerOverlay" aria-hidden="true">
-      <div class="power-panel" role="dialog" aria-modal="true" aria-labelledby="powerTitle">
-        <div class="power-header">
-          <div class="power-badge">⏻</div>
-          <div>
-            <div class="power-kicker">Power</div>
-            <h2 id="powerTitle">Choose an action</h2>
-          </div>
-        </div>
+  document.querySelectorAll('[data-taskbar]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.taskbar === taskbarMode;
+      button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
+    }
+  });
 
-        <div class="power-actions">
-          <button class="power-option primary" data-action="shutdown" type="button">
-            <span class="option-icon">⏻</span>
-            <span>Shut down</span>
-          </button>
-          <button class="power-option" data-action="sleep" type="button">
-            <span class="option-icon">☾</span>
-            <span>Sleep</span>
-          </button>
-          <button class="power-option" data-action="restart" type="button">
-            <span class="option-icon">↻</span>
-            <span>Restart</span>
-          </button>
-        </div>
+  try {
+    localStorage.setItem(TASKBAR_STORAGE_KEY, taskbarMode);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
 
-        <div class="power-footer">
-          <button class="action-btn secondary" id="closePowerMenu" type="button">Cancel</button>
-          <button class="action-btn primary" id="confirmPowerAction" type="button">Confirm</button>
-        </div>
-      </div>
-    </div>
+function applyAccessibility(level) {
+  const accessibility = ['standard', 'high-contrast', 'reduced-motion'].includes(level) ? level : 'standard';
+  document.body.dataset.accessibility = accessibility;
+  applyMotionProfile();
 
-    <div class="blackout-screen" id="blackoutScreen" aria-hidden="true">
-      <div class="shutdown-text">Shutting down...</div>
-    </div>
+  document.querySelectorAll('[data-accessibility]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.accessibility === accessibility;
+      button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
+    }
+  });
 
-    <div class="lightbox" id="lightbox" aria-hidden="true">
-      <button class="lightbox-close" id="lightboxClose" aria-label="Close image" type="button">×</button>
-      <img id="lightboxImage" src="" alt="Expanded photo" />
-    </div>
+  try {
+    localStorage.setItem(ACCESSIBILITY_STORAGE_KEY, accessibility);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
 
-    <script src="script.js"></script>
-  </body>
-</html>
+function applyTextSize(size) {
+  const textSize = validTextSizes.includes(size) ? size : 'medium';
+  document.body.dataset.textSize = textSize;
+
+  document.querySelectorAll('[data-text-size]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.textSize === textSize;
+      button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
+    }
+  });
+
+  try {
+    localStorage.setItem(TEXT_SIZE_STORAGE_KEY, textSize);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function applyWindowScale(scale) {
+  const windowScale = validWindowScales.includes(String(scale)) ? String(scale) : '100';
+  document.body.dataset.windowScale = windowScale;
+
+  document.querySelectorAll('[data-window-scale]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.windowScale === windowScale;
+      button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
+    }
+  });
+
+  try {
+    localStorage.setItem(WINDOW_SCALE_STORAGE_KEY, windowScale);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function applyWindowStyle(style) {
+  const windowStyle = validWindowStyles.includes(style) ? style : 'glass';
+  document.body.dataset.windowStyle = windowStyle;
+
+  document.querySelectorAll('[data-window-style]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      const isActive = button.dataset.windowStyle === windowStyle;
+      button.classList.toggle('active', isActive);
+      button.classList.toggle('selected', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.setAttribute('aria-selected', String(isActive));
+    }
+  });
+
+  try {
+    localStorage.setItem(WINDOW_STYLE_STORAGE_KEY, windowStyle);
+  } catch (error) {
+    // Ignore storage errors in restricted environments.
+  }
+}
+
+function initTheme() {
+  const savedTheme = (() => {
+    try { return localStorage.getItem(THEME_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedAccent = (() => {
+    try { return localStorage.getItem(ACCENT_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedWallpaper = (() => {
+    try { return localStorage.getItem(WALLPAPER_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedTransparency = (() => {
+    try { return localStorage.getItem(TRANSPARENCY_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedTaskbar = (() => {
+    try { return localStorage.getItem(TASKBAR_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedAccessibility = (() => {
+    try { return localStorage.getItem(ACCESSIBILITY_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedFont = (() => {
+    try { return localStorage.getItem(FONT_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedTextSize = (() => {
+    try { return localStorage.getItem(TEXT_SIZE_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedWindowScale = (() => {
+    try { return localStorage.getItem(WINDOW_SCALE_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  const savedWindowStyle = (() => {
+    try { return localStorage.getItem(WINDOW_STYLE_STORAGE_KEY); } catch (error) { return null; }
+  })();
+
+  applyTheme(savedTheme || 'dark');
+  applyAccent(savedAccent || 'blue');
+  applyFont(savedFont || 'default');
+  applyWallpaper(savedWallpaper || 'default');
+  applyTransparency(savedTransparency || 'medium');
+  applyTaskbar(savedTaskbar || 'normal');
+  applyAccessibility(savedAccessibility || 'standard');
+  applyTextSize(savedTextSize || 'medium');
+  applyWindowScale(savedWindowScale || '100');
+  applyWindowStyle(savedWindowStyle || 'glass');
+
+  document.querySelectorAll('.theme-option').forEach((button) => {
+    button.addEventListener('click', () => applyTheme(button.dataset.theme));
+  });
+
+  document.querySelectorAll('.accent-swatch').forEach((button) => {
+    button.addEventListener('click', () => applyAccent(button.dataset.accent));
+  });
+
+  document.querySelectorAll('.font-option').forEach((button) => {
+    button.addEventListener('click', () => applyFont(button.dataset.font));
+  });
+
+  document.querySelectorAll('.wallpaper-option').forEach((button) => {
+    button.addEventListener('click', () => applyWallpaper(button.dataset.wallpaper));
+  });
+
+  document.querySelectorAll('[data-transparency]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyTransparency(button.dataset.transparency));
+    }
+  });
+
+  document.querySelectorAll('[data-taskbar]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyTaskbar(button.dataset.taskbar));
+    }
+  });
+
+  document.querySelectorAll('[data-accessibility]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyAccessibility(button.dataset.accessibility));
+    }
+  });
+
+  document.querySelectorAll('[data-text-size]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyTextSize(button.dataset.textSize));
+    }
+  });
+
+  document.querySelectorAll('[data-window-scale]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyWindowScale(button.dataset.windowScale));
+    }
+  });
+
+  document.querySelectorAll('[data-window-style]').forEach((button) => {
+    if (button.classList.contains('segment')) {
+      button.addEventListener('click', () => applyWindowStyle(button.dataset.windowStyle));
+    }
+  });
+}
+
+function initSettingsPanel() {
+  const settingsTile = document.getElementById('settingsTile');
+  const dockSettingsButton = document.getElementById('dockSettingsButton');
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  const closeSettings = document.getElementById('closeSettings');
+  const settingsTabs = document.querySelectorAll('.settings-tab');
+  const settingsPanes = document.querySelectorAll('.settings-pane');
+
+  const openSettings = () => {
+    if (!settingsOverlay) return;
+    settingsOverlay.classList.add('is-open');
+    settingsOverlay.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeSettingsPanel = () => {
+    if (!settingsOverlay) return;
+    settingsOverlay.classList.remove('is-open');
+    settingsOverlay.setAttribute('aria-hidden', 'true');
+  };
+
+  const setActiveSettingsTab = (tabName) => {
+    settingsTabs.forEach((tab, index) => {
+      const isActive = tab.dataset.settingsTab === tabName;
+      tab.classList.toggle('active', isActive);
+      tab.classList.toggle('selected', isActive);
+      tab.setAttribute('aria-selected', String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+      tab.dataset.index = String(index);
+    });
+
+    settingsPanes.forEach((pane) => {
+      const isActive = pane.dataset.pane === tabName;
+      pane.classList.toggle('active', isActive);
+      pane.hidden = !isActive;
+      pane.setAttribute('aria-hidden', String(!isActive));
+    });
+  };
+
+  const moveSettingsTabFocus = (currentIndex, direction) => {
+    const visibleTabs = Array.from(settingsTabs);
+    if (!visibleTabs.length) return;
+    const nextIndex = (currentIndex + direction + visibleTabs.length) % visibleTabs.length;
+    const nextTab = visibleTabs[nextIndex];
+    if (nextTab) {
+      setActiveSettingsTab(nextTab.dataset.settingsTab);
+      nextTab.focus();
+    }
+  };
+
+  if (settingsTile) {
+    settingsTile.addEventListener('click', openSettings);
+  }
+
+  if (dockSettingsButton) {
+    dockSettingsButton.addEventListener('click', openSettings);
+  }
+
+  if (closeSettings) {
+    closeSettings.addEventListener('click', closeSettingsPanel);
+  }
+
+  if (settingsOverlay) {
+    settingsOverlay.addEventListener('click', (event) => {
+      if (event.target === settingsOverlay) {
+        closeSettingsPanel();
+      }
+    });
+  }
+
+  settingsTabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => setActiveSettingsTab(tab.dataset.settingsTab));
+    tab.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        moveSettingsTabFocus(index, 1);
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        moveSettingsTabFocus(index, -1);
+      }
+      if (event.key === 'Home') {
+        event.preventDefault();
+        const firstTab = settingsTabs[0];
+        if (firstTab) {
+          setActiveSettingsTab(firstTab.dataset.settingsTab);
+          firstTab.focus();
+        }
+      }
+      if (event.key === 'End') {
+        event.preventDefault();
+        const lastTab = settingsTabs[settingsTabs.length - 1];
+        if (lastTab) {
+          setActiveSettingsTab(lastTab.dataset.settingsTab);
+          lastTab.focus();
+        }
+      }
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && settingsOverlay && settingsOverlay.classList.contains('is-open')) {
+      closeSettingsPanel();
+    }
+  });
+
+  setActiveSettingsTab('general');
+}
+
+function initFileTabs() {
+  const tabs = document.querySelectorAll('.files-tab');
+  const cards = document.querySelectorAll('.folder-card');
+
+  if (!tabs.length || !cards.length) return;
+
+  const setActiveTab = (tabName) => {
+    const activeTabName = normalizeTabName(tabName);
+
+    tabs.forEach((tab, index) => {
+      const isActive = normalizeTabName(tab.dataset.tab) === activeTabName;
+      tab.classList.toggle('active', isActive);
+      tab.classList.toggle('selected', isActive);
+      tab.setAttribute('aria-selected', String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+      tab.dataset.index = String(index);
+    });
+
+    cards.forEach((card) => {
+      const category = normalizeTabName(card.dataset.category);
+      const matches = activeTabName === 'all' || category === activeTabName;
+      card.style.display = matches ? '' : 'none';
+    });
+  };
+
+  const moveTabFocus = (currentIndex, direction) => {
+    const visibleTabs = Array.from(tabs);
+    const nextIndex = (currentIndex + direction + visibleTabs.length) % visibleTabs.length;
+    const nextTab = visibleTabs[nextIndex];
+    if (nextTab) {
+      setActiveTab(nextTab.dataset.tab);
+      nextTab.focus();
+    }
+  };
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => setActiveTab(tab.dataset.tab));
+    tab.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        moveTabFocus(index, 1);
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        moveTabFocus(index, -1);
+      }
+      if (event.key === 'Home') {
+        event.preventDefault();
+        const firstTab = tabs[0];
+        if (firstTab) {
+          setActiveTab(firstTab.dataset.tab);
+          firstTab.focus();
+        }
+      }
+      if (event.key === 'End') {
+        event.preventDefault();
+        const lastTab = tabs[tabs.length - 1];
+        if (lastTab) {
+          setActiveTab(lastTab.dataset.tab);
+          lastTab.focus();
+        }
+      }
+    });
+  });
+
+  const photoTile = document.querySelector('[data-open-tab="photo"]');
+  if (photoTile) {
+    photoTile.addEventListener('click', () => {
+      setActiveTab('photo');
+      document.querySelector('.files-gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  setActiveTab('all');
+}
+
+function initPowerMenu() {
+  const powerButton = document.getElementById('powerButton');
+  const powerOverlay = document.getElementById('powerOverlay');
+  const closePowerMenu = document.getElementById('closePowerMenu');
+  const confirmPowerAction = document.getElementById('confirmPowerAction');
+  const blackoutScreen = document.getElementById('blackoutScreen');
+  const powerOptions = document.querySelectorAll('.power-option');
+
+  if (!powerButton && !powerOverlay && !confirmPowerAction && !blackoutScreen) {
+    return;
+  }
+
+  let selectedPowerAction = 'shutdown';
+
+  const setPowerAction = (action) => {
+    selectedPowerAction = action;
+    powerOptions.forEach((option) => {
+      const isSelected = option.dataset.action === action;
+      option.classList.toggle('selected', isSelected);
+      option.setAttribute('aria-pressed', String(isSelected));
+    });
+  };
+
+  const openPowerMenu = () => {
+    if (!powerOverlay) return;
+    powerOverlay.classList.add('is-open');
+    powerOverlay.setAttribute('aria-hidden', 'false');
+  };
+
+  const closePowerMenuDialog = () => {
+    if (!powerOverlay) return;
+    powerOverlay.classList.remove('is-open');
+    powerOverlay.setAttribute('aria-hidden', 'true');
+  };
+
+  const triggerPowerAction = () => {
+    if (!blackoutScreen) return;
+
+    const labelMap = {
+      shutdown: 'Shutting down...',
+      sleep: 'Sleeping...',
+      restart: 'Restarting...'
+    };
+
+    const label = labelMap[selectedPowerAction] || 'Shutting down...';
+    const blackoutText = blackoutScreen.querySelector('.shutdown-text');
+
+    if (blackoutText) {
+      blackoutText.textContent = label;
+    }
+
+    closePowerMenuDialog();
+    blackoutScreen.classList.add('is-visible');
+    blackoutScreen.setAttribute('aria-hidden', 'false');
+  };
+
+  if (powerButton) {
+    powerButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      openPowerMenu();
+    });
+  }
+
+  if (closePowerMenu) {
+    closePowerMenu.addEventListener('click', closePowerMenuDialog);
+  }
+
+  if (confirmPowerAction) {
+    confirmPowerAction.addEventListener('click', triggerPowerAction);
+  }
+
+  if (powerOverlay) {
+    powerOverlay.addEventListener('click', (event) => {
+      if (event.target === powerOverlay) {
+        closePowerMenuDialog();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && powerOverlay && powerOverlay.classList.contains('is-open')) {
+      closePowerMenuDialog();
+    }
+  });
+
+  powerOptions.forEach((option) => {
+    option.addEventListener('click', () => setPowerAction(option.dataset.action));
+  });
+
+  setPowerAction(selectedPowerAction);
+}
+
+function initImageLightbox() {
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImage = document.getElementById('lightboxImage');
+  const closeButton = document.getElementById('lightboxClose');
+  const photoItems = document.querySelectorAll('.thumb-photo');
+
+  if (!lightbox || !lightboxImage || !photoItems.length) return;
+
+  const openLightbox = (src) => {
+    lightboxImage.src = src;
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImage.src = '';
+  };
+
+  photoItems.forEach((item) => {
+    item.addEventListener('click', () => openLightbox(item.src));
+  });
+
+  if (closeButton) {
+    closeButton.addEventListener('click', closeLightbox);
+  }
+
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && lightbox.classList.contains('is-open')) {
+      closeLightbox();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  updateClock();
+  initSettingsPanel();
+  initFileTabs();
+  initPowerMenu();
+  initImageLightbox();
+  setInterval(updateClock, 30000);
+});
