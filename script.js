@@ -23,6 +23,14 @@ const accentLabels = {
   gold: 'Gold Leaf'
 };
 
+function normalizeTabName(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_]+/g, ' ')
+    .replace(/[^a-z0-9 ]+/g, '');
+}
+
 function applyMotionProfile() {
   const reducedMotion = document.body.dataset.accessibility === 'reduced-motion';
   document.body.classList.toggle('reduced-motion', reducedMotion);
@@ -437,8 +445,10 @@ function initFileTabs() {
   if (!tabs.length || !cards.length) return;
 
   const setActiveTab = (tabName) => {
+    const activeTabName = normalizeTabName(tabName);
+
     tabs.forEach((tab, index) => {
-      const isActive = tab.dataset.tab === tabName;
+      const isActive = normalizeTabName(tab.dataset.tab) === activeTabName;
       tab.classList.toggle('active', isActive);
       tab.classList.toggle('selected', isActive);
       tab.setAttribute('aria-selected', String(isActive));
@@ -447,8 +457,8 @@ function initFileTabs() {
     });
 
     cards.forEach((card) => {
-      const category = card.dataset.category;
-      const matches = tabName === 'all' || category === tabName;
+      const category = normalizeTabName(card.dataset.category);
+      const matches = activeTabName === 'all' || category === activeTabName;
       card.style.display = matches ? '' : 'none';
     });
   };
@@ -493,6 +503,14 @@ function initFileTabs() {
     });
   });
 
+  const photoTile = document.querySelector('[data-open-tab="photo"]');
+  if (photoTile) {
+    photoTile.addEventListener('click', () => {
+      setActiveTab('photo');
+      document.querySelector('.files-gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
   setActiveTab('all');
 }
 
@@ -504,31 +522,37 @@ function initPhotoGallery() {
   const galleryClose = document.getElementById('photoGalleryClose');
   const galleryPrev = document.getElementById('photoGalleryPrev');
   const galleryNext = document.getElementById('photoGalleryNext');
-  const tabs = document.querySelectorAll('.files-tab');
-  const cards = document.querySelectorAll('.folder-card');
   const photoItems = Array.from(document.querySelectorAll('.thumb-photo'));
-
-  if (!photoTile || !galleryOverlay || !galleryImage || !galleryThumbs || !photoItems.length) return;
-
-  let currentIndex = 0;
 
   const setActiveFileTab = (tabName) => {
     const fileTabs = Array.from(document.querySelectorAll('.files-tab'));
     const allCards = Array.from(document.querySelectorAll('.folder-card'));
+    const normalizedTabName = normalizeTabName(tabName);
 
     fileTabs.forEach((tab) => {
-      const isActive = tab.dataset.tab === tabName;
+      const isActive = normalizeTabName(tab.dataset.tab) === normalizedTabName;
       tab.classList.toggle('active', isActive);
       tab.classList.toggle('selected', isActive);
       tab.setAttribute('aria-selected', String(isActive));
     });
 
     allCards.forEach((card) => {
-      const category = card.dataset.category;
-      const matches = tabName === 'all' || category === tabName;
+      const category = normalizeTabName(card.dataset.category);
+      const matches = normalizedTabName === 'all' || category === normalizedTabName;
       card.style.display = matches ? '' : 'none';
     });
   };
+
+  if (photoTile) {
+    photoTile.addEventListener('click', () => {
+      setActiveFileTab('photo');
+      document.querySelector('.files-gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  if (!galleryOverlay || !galleryImage || !galleryThumbs || !photoItems.length) return;
+
+  let currentIndex = 0;
 
   const renderGallery = () => {
     const currentPhoto = photoItems[currentIndex];
@@ -567,8 +591,6 @@ function initPhotoGallery() {
     thumbButton.addEventListener('click', () => openGallery(index));
     galleryThumbs.appendChild(thumbButton);
   });
-
-  photoTile.addEventListener('click', () => openGallery(0));
 
   if (galleryClose) {
     galleryClose.addEventListener('click', closeGallery);
