@@ -101,7 +101,7 @@
             <span class="tile-icon">♫</span>
             <span>Music</span>
           </button>
-          <button class="app-tile tile-red" type="button">
+          <button class="app-tile tile-red" data-open-tab="photo" type="button">
             <span class="tile-icon">◌</span>
             <span>Photos</span>
           </button>
@@ -115,11 +115,12 @@
       <section class="files-gallery" aria-label="Files app folders">
         <div class="section-header">
           <div class="widget-label">Files</div>
-          <span class="section-pill">4 folders</span>
+          <span class="section-pill">7 folders</span>
         </div>
 
         <div class="files-tabs" aria-label="Files tabs">
           <button class="files-tab active" data-tab="all" type="button">All</button>
+          <button class="files-tab" data-tab="photo" type="button">Photo</button>
           <button class="files-tab" data-tab="cat" type="button">Cat</button>
           <button class="files-tab" data-tab="dog" type="button">Dog</button>
           <button class="files-tab" data-tab="robot" type="button">Robot</button>
@@ -130,6 +131,46 @@
         </div>
 
         <div class="folder-grid">
+          <article class="folder-card" data-category="photo">
+            <div class="folder-top">
+              <div class="folder-icon">📁</div>
+              <span>Photo</span>
+            </div>
+            <div class="thumbnail-grid">
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1511044568932-338cba0ad803?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 1" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 2" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 3" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1519052537078-e6302a4968d4?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 4" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 5" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1589883661923-6476cb0ae9f2?auto=format&fit=crop&w=1600&q=80" alt="Cat photo 6" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b5?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 1" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 2" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 3" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 4" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=900&q=80" alt="Dog photo 5" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=1600&q=80" alt="Dog photo 6" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 1" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1617791160536-7b9a0f5f3d4b?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 2" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 3" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1564466809058-bf4114d55352?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 4" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 5" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80" alt="Robot photo 6" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/0yvQtgTb/20260830-153749.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 1" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/JWdDX12L/20260504-164607.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 2" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/3mQMHRnw/20260322-164525.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 3" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/QF0qpLy9/pexels-mitchell-landow-2164064156-39420146.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 4" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/pjPhdWBR/pexels-mitchell-landow-2164064156-39420251.jpg" alt="Everyday Rewards photo 1" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/4g9DB383/20251108-172427.jpg" alt="Everyday Rewards photo 2" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/238kBGxx/20251108-170841.jpg" alt="Everyday Rewards photo 3" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/XrDRB6Qw/20251108-172353.jpg" alt="Everyday Rewards photo 4" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/Lhgrw31f/1791487641578.jpg" alt="Everyday Rewards photo 5" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/7NRyTYby/20251108-170343.jpg" alt="Everyday Rewards photo 6" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/k2D7qM2B/pexels-mitchell-landow-2163948975-39328374-1.jpg" alt="ALDI photo 1" loading="lazy" />
+              <img class="thumb thumb-photo" src="https://i.ibb.co/39N9QTry/20260122-135628.jpg" alt="Uber photo 1" loading="lazy" />
+            </div>
+            <div class="folder-footer">30 photos</div>
+          </article>
+
           <article class="folder-card" data-category="cat">
             <div class="folder-top">
               <div class="folder-icon">📁</div>
@@ -177,8 +218,7 @@
               <img class="thumb thumb-photo" src="https://i.ibb.co/0yvQtgTb/20260830-153749.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 1" loading="lazy" />
               <img class="thumb thumb-photo" src="https://i.ibb.co/JWdDX12L/20260504-164607.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 2" loading="lazy" />
               <img class="thumb thumb-photo" src="https://i.ibb.co/3mQMHRnw/20260322-164525.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 3" loading="lazy" />
-              <img class="thumb thumb-photo" src="https://i.ibb.co/QF0qpLy9/pexels-mitchell-landow-2164064156-39420146.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 3" loading="lazy" />
-
+              <img class="thumb thumb-photo" src="https://i.ibb.co/QF0qpLy9/pexels-mitchell-landow-2164064156-39420146.jpg?auto=format&fit=crop&w=1600&q=80" alt="Roborock photo 4" loading="lazy" />
             </div>
             <div class="folder-footer">10 photos</div>
           </article>
@@ -198,25 +238,26 @@
             </div>
             <div class="folder-footer">6 photos</div>
           </article>
-        </div> 
-        
-        <article class="folder-card" data-category="ALDI">
+
+          <article class="folder-card" data-category="ALDI">
             <div class="folder-top">
               <div class="folder-icon">📁</div>
               <span>ALDI</span>
             </div>
             <div class="thumbnail-grid">
               <img class="thumb thumb-photo" src="https://i.ibb.co/k2D7qM2B/pexels-mitchell-landow-2163948975-39328374-1.jpg" alt="ALDI photo 1" loading="lazy" />
+            </div>
             <div class="folder-footer">1 photo</div>
           </article>
 
-                <article class="folder-card" data-category="Uber">
+          <article class="folder-card" data-category="Uber">
             <div class="folder-top">
               <div class="folder-icon">📁</div>
               <span>Uber</span>
             </div>
             <div class="thumbnail-grid">
               <img class="thumb thumb-photo" src="https://i.ibb.co/39N9QTry/20260122-135628.jpg" alt="Uber photo 1" loading="lazy" />
+            </div>
             <div class="folder-footer">1 photo</div>
           </article>
         </div>
