@@ -116,7 +116,7 @@ function applyAccent(accentName) {
 }
 
 function applyFont(fontName) {
-  const font = ['default', 'gotham', 'fredoka', 'adobe-clean', 'montserrat', 'poppins', 'quicksand'].includes(fontName) ? fontName : 'default';
+  const font = ['default', 'gotham', 'fredoka', 'fredoka-one', 'adobe-clean', 'montserrat', 'poppins', 'quicksand', 'dm-sans', 'lato', 'nunito', 'raleway', 'ubuntu', 'oswald', 'playfair-display', 'orbitron', 'comfortaa', 'space-grotesk', 'libre-baskerville'].includes(fontName) ? fontName : 'default';
   document.body.dataset.font = font;
 
   const fontButtons = document.querySelectorAll('.font-option');
@@ -132,10 +132,22 @@ function applyFont(fontName) {
     default: '"Segoe UI", "Inter", sans-serif',
     gotham: '"Gotham", "Segoe UI", sans-serif',
     fredoka: '"Fredoka", "Segoe UI", sans-serif',
+    'fredoka-one': '"Fredoka One", "Fredoka", "Segoe UI", sans-serif',
     'adobe-clean': '"Adobe Clean", "Segoe UI", sans-serif',
     montserrat: '"Montserrat", "Segoe UI", sans-serif',
     poppins: '"Poppins", "Segoe UI", sans-serif',
-    quicksand: '"Quicksand", "Segoe UI", sans-serif'
+    quicksand: '"Quicksand", "Segoe UI", sans-serif',
+    'dm-sans': '"DM Sans", "Segoe UI", sans-serif',
+    lato: '"Lato", "Segoe UI", sans-serif',
+    nunito: '"Nunito", "Segoe UI", sans-serif',
+    raleway: '"Raleway", "Segoe UI", sans-serif',
+    ubuntu: '"Ubuntu", "Segoe UI", sans-serif',
+    oswald: '"Oswald", "Segoe UI", sans-serif',
+    'playfair-display': '"Playfair Display", "Georgia", serif',
+    orbitron: '"Orbitron", "Segoe UI", sans-serif',
+    comfortaa: '"Comfortaa", "Segoe UI", sans-serif',
+    'space-grotesk': '"Space Grotesk", "Segoe UI", sans-serif',
+    'libre-baskerville': '"Libre Baskerville", "Georgia", serif'
   };
 
   document.documentElement.style.setProperty('--font-ui', fontMap[font] || fontMap.default);
@@ -786,3 +798,187 @@ document.addEventListener('DOMContentLoaded', () => {
   initImageLightbox();
   setInterval(updateClock, 30000);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
