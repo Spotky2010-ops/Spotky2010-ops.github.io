@@ -496,6 +496,113 @@ function initFileTabs() {
   setActiveTab('all');
 }
 
+function initPhotoGallery() {
+  const photoTile = document.querySelector('[data-open-tab="photo"]');
+  const galleryOverlay = document.getElementById('photoGalleryOverlay');
+  const galleryImage = document.getElementById('photoGalleryImage');
+  const galleryThumbs = document.getElementById('photoGalleryThumbnails');
+  const galleryClose = document.getElementById('photoGalleryClose');
+  const galleryPrev = document.getElementById('photoGalleryPrev');
+  const galleryNext = document.getElementById('photoGalleryNext');
+  const tabs = document.querySelectorAll('.files-tab');
+  const cards = document.querySelectorAll('.folder-card');
+  const photoItems = Array.from(document.querySelectorAll('.thumb-photo'));
+
+  if (!photoTile || !galleryOverlay || !galleryImage || !galleryThumbs || !photoItems.length) return;
+
+  let currentIndex = 0;
+
+  const setActiveFileTab = (tabName) => {
+    const fileTabs = Array.from(document.querySelectorAll('.files-tab'));
+    const allCards = Array.from(document.querySelectorAll('.folder-card'));
+
+    fileTabs.forEach((tab) => {
+      const isActive = tab.dataset.tab === tabName;
+      tab.classList.toggle('active', isActive);
+      tab.classList.toggle('selected', isActive);
+      tab.setAttribute('aria-selected', String(isActive));
+    });
+
+    allCards.forEach((card) => {
+      const category = card.dataset.category;
+      const matches = tabName === 'all' || category === tabName;
+      card.style.display = matches ? '' : 'none';
+    });
+  };
+
+  const renderGallery = () => {
+    const currentPhoto = photoItems[currentIndex];
+    if (!currentPhoto) return;
+
+    galleryImage.src = currentPhoto.src;
+    galleryImage.alt = currentPhoto.alt || 'Photo';
+
+    Array.from(galleryThumbs.children).forEach((thumb, index) => {
+      const isActive = index === currentIndex;
+      thumb.classList.toggle('active', isActive);
+      thumb.setAttribute('aria-pressed', String(isActive));
+    });
+  };
+
+  const openGallery = (index = 0) => {
+    currentIndex = (index + photoItems.length) % photoItems.length;
+    setActiveFileTab('photo');
+    renderGallery();
+    galleryOverlay.classList.add('is-open');
+    galleryOverlay.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeGallery = () => {
+    galleryOverlay.classList.remove('is-open');
+    galleryOverlay.setAttribute('aria-hidden', 'true');
+  };
+
+  galleryThumbs.innerHTML = '';
+  photoItems.forEach((item, index) => {
+    const thumbButton = document.createElement('button');
+    thumbButton.type = 'button';
+    thumbButton.className = 'gallery-thumb';
+    thumbButton.setAttribute('aria-label', `View photo ${index + 1}`);
+    thumbButton.innerHTML = `<img src="${item.src}" alt="${item.alt || 'Gallery photo'}" />`;
+    thumbButton.addEventListener('click', () => openGallery(index));
+    galleryThumbs.appendChild(thumbButton);
+  });
+
+  photoTile.addEventListener('click', () => openGallery(0));
+
+  if (galleryClose) {
+    galleryClose.addEventListener('click', closeGallery);
+  }
+
+  if (galleryPrev) {
+    galleryPrev.addEventListener('click', () => openGallery(currentIndex - 1));
+  }
+
+  if (galleryNext) {
+    galleryNext.addEventListener('click', () => openGallery(currentIndex + 1));
+  }
+
+  galleryOverlay.addEventListener('click', (event) => {
+    if (event.target === galleryOverlay) {
+      closeGallery();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && galleryOverlay.classList.contains('is-open')) {
+      closeGallery();
+    }
+    if (event.key === 'ArrowRight' && galleryOverlay.classList.contains('is-open')) {
+      openGallery(currentIndex + 1);
+    }
+    if (event.key === 'ArrowLeft' && galleryOverlay.classList.contains('is-open')) {
+      openGallery(currentIndex - 1);
+    }
+  });
+
+  renderGallery();
+}
+
 function initScrollControls() {
   const scrollUp = document.getElementById('scrollUp');
   const scrollDown = document.getElementById('scrollDown');
@@ -651,6 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateClock();
   initSettingsPanel();
   initFileTabs();
+  initPhotoGallery();
   initScrollControls();
   initPowerMenu();
   initImageLightbox();
