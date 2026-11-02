@@ -28,7 +28,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Segoe UI", "Inter", sans-serif;
+  font-family: "Segoe UI", "Inter", "SF Pro Display", sans-serif;
   background:
     radial-gradient(circle at top left, rgba(88, 128, 255, 0.12), transparent 30%),
     radial-gradient(circle at bottom right, rgba(120, 236, 255, 0.12), transparent 24%),
@@ -56,50 +56,15 @@ body[data-theme="light"] {
     linear-gradient(135deg, #edf4ff 0%, #dfeeff 20%, #ecf7ff 100%);
 }
 
-body[data-accent="violet"] {
-  --blue: #b89bff;
-  --blue-deep: #8a72ff;
-}
-
-body[data-accent="green"] {
-  --blue: #7ae7ac;
-  --blue-deep: #56bf8d;
-}
-
-body[data-accent="rose"] {
-  --blue: #ff8fc8;
-  --blue-deep: #ff5ea8;
-}
-
-body[data-accent="amber"] {
-  --blue: #ffd16f;
-  --blue-deep: #efaa2a;
-}
-
-body[data-accent="aqua"] {
-  --blue: #8ae3ff;
-  --blue-deep: #4bc0ec;
-}
-
-body[data-accent="coral"] {
-  --blue: #ffb29d;
-  --blue-deep: #ff7d6b;
-}
-
-body[data-accent="mint"] {
-  --blue: #9aeec2;
-  --blue-deep: #56d39b;
-}
-
-body[data-accent="plum"] {
-  --blue: #d9b1ff;
-  --blue-deep: #9a74f8;
-}
-
-body[data-accent="gold"] {
-  --blue: #ffe38b;
-  --blue-deep: #f3bd38;
-}
+body[data-accent="violet"] { --blue: #b89bff; --blue-deep: #8a72ff; }
+body[data-accent="green"] { --blue: #7ae7ac; --blue-deep: #56bf8d; }
+body[data-accent="rose"] { --blue: #ff8fc8; --blue-deep: #ff5ea8; }
+body[data-accent="amber"] { --blue: #ffd16f; --blue-deep: #efaa2a; }
+body[data-accent="aqua"] { --blue: #8ae3ff; --blue-deep: #4bc0ec; }
+body[data-accent="coral"] { --blue: #ffb29d; --blue-deep: #ff7d6b; }
+body[data-accent="mint"] { --blue: #9aeec2; --blue-deep: #56d39b; }
+body[data-accent="plum"] { --blue: #d9b1ff; --blue-deep: #9a74f8; }
+body[data-accent="gold"] { --blue: #ffe38b; --blue-deep: #f3bd38; }
 
 button,
 input {
@@ -155,7 +120,7 @@ img {
 }
 
 body[data-theme="light"] .desktop-shell {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .topbar {
