@@ -30,7 +30,7 @@ const validThemes = ['dark', 'light', 'midnight'];
 const validWallpapers = ['default', 'aurora', 'sunset'];
 const validAccents = ['blue', 'violet', 'green', 'rose', 'amber', 'aqua', 'coral', 'mint', 'plum', 'gold'];
 const validTextSizes = ['small', 'medium', 'large'];
-const validWindowScales = ['100', '110', '125'];
+const validWindowScales = ['100', '110', '125', '135'];
 const validWindowStyles = ['glass', 'classic', 'minimal'];
 
 function normalizeTabName(value) {
@@ -62,10 +62,14 @@ function updateClock() {
 
   if (hour < 12) {
     greetingElement.textContent = 'Good morning';
-  } else if (hour < 18) {
+    else if (hour < 15) {
+    greetingElement.textContent = 'Good lunch';
+  } else if (hour < 17) {
     greetingElement.textContent = 'Good afternoon';
-  } else {
+  } else if (hour < 19) {
     greetingElement.textContent = 'Good evening';
+  } else {
+    greetingElement.textContent = 'Good Night';
   }
 }
 
