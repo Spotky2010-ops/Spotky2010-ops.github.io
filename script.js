@@ -62,7 +62,7 @@ function updateClock() {
 
   if (hour < 12) {
     greetingElement.textContent = 'Good morning';
-    else if (hour < 15) {
+  } else if (hour < 15) {
     greetingElement.textContent = 'Good lunch';
   } else if (hour < 17) {
     greetingElement.textContent = 'Good afternoon';
@@ -539,15 +539,80 @@ function initSettingsPanel() {
 function initFileTabs() {
   const tabs = document.querySelectorAll('.files-tab');
   const cards = document.querySelectorAll('.folder-card');
+  const filesGallery = document.getElementById('filesGallery');
 
-  if (!tabs.length || !cards.length) return;
+  if (!tabs.length || !cards.length || !filesGallery) return;
 
-  const photoTile = document.querySelector('[data-open-tab="photo"]');
-  const filesGallery = document.querySelector('.files-gallery');
-  const sectionHeader = filesGallery?.querySelector('.section-header');
-  if (photoTile && sectionHeader) {
-    sectionHeader.append(photoTile);
+  const style = document.createElement('style');
+  style.textContent = `
+    #filesGallery.files-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      overflow-y: auto;
+      margin: 0;
+      padding: 24px;
+      border: 0;
+      border-radius: 0;
+      background: rgba(2, 7, 15, 0.62);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    #filesGallery.files-overlay.is-open { display: block; }
+    #filesGallery .files-dialog-panel {
+      width: min(1100px, 100%);
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid var(--stroke);
+      border-radius: var(--window-radius);
+      background: var(--panel-strong);
+      box-shadow: 0 24px 64px var(--shadow);
+      color: var(--text);
+    }
+    #filesGallery .files-dialog-header { position: sticky; top: -20px; z-index: 1; padding: 4px 0 12px; background: var(--panel-strong); }
+    #filesGallery .files-dialog-close { width: 36px; height: 36px; display: grid; place-items: center; margin-left: auto; font-size: 1.3rem; }
+    #filesGallery .thumb-photo { cursor: zoom-in; }
+    @media (max-width: 640px) {
+      #filesGallery.files-overlay { padding: 10px; }
+      #filesGallery .files-dialog-panel { max-height: calc(100vh - 20px); padding: 14px; }
+      #filesGallery .files-dialog-header { top: -14px; }
+    }
+  `;
+  document.head.append(style);
+
+  const panel = document.createElement('div');
+  panel.className = 'files-dialog-panel';
+  filesGallery.append(panel);
+  while (filesGallery.firstChild !== panel) {
+    panel.prepend(filesGallery.firstChild);
   }
+
+  filesGallery.classList.add('files-overlay');
+  filesGallery.setAttribute('role', 'dialog');
+  filesGallery.setAttribute('aria-modal', 'true');
+  filesGallery.setAttribute('aria-hidden', 'true');
+  filesGallery.setAttribute('tabindex', '-1');
+  filesGallery.setAttribute('aria-label', 'Files and photo folders');
+
+  const sectionHeader = filesGallery.querySelector('.section-header');
+  if (sectionHeader) {
+    sectionHeader.classList.add('files-dialog-header');
+    const closeButton = document.createElement('button');
+    closeButton.className = 'settings-close files-dialog-close';
+    closeButton.type = 'button';
+    closeButton.setAttribute('aria-label', 'Close files panel');
+    closeButton.textContent = '×';
+    sectionHeader.append(closeButton);
+  }
+
+  const closeButton = filesGallery.querySelector('.files-dialog-close');
+  const openButtons = document.querySelectorAll('[data-open-tab]');
+  const explorerButton = document.querySelector('.dock-item[aria-label="Explorer"]');
+  const originalBodyOverflow = document.body.style.overflow;
+  let lastOpener = null;
 
   const setActiveTab = (tabName) => {
     const activeTabName = normalizeTabName(tabName);
@@ -568,52 +633,58 @@ function initFileTabs() {
     });
   };
 
-  const moveTabFocus = (currentIndex, direction) => {
-    const visibleTabs = Array.from(tabs);
-    const nextIndex = (currentIndex + direction + visibleTabs.length) % visibleTabs.length;
-    const nextTab = visibleTabs[nextIndex];
-    if (nextTab) {
-      setActiveTab(nextTab.dataset.tab);
-      nextTab.focus();
-    }
+  const openFilesPanel = (tabName = 'all', opener = null) => {
+    lastOpener = opener;
+    setActiveTab(tabName);
+    filesGallery.classList.add('is-open');
+    filesGallery.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    closeButton?.focus();
   };
+
+  const closeFilesPanel = () => {
+    filesGallery.classList.remove('is-open');
+    filesGallery.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = originalBodyOverflow;
+    lastOpener?.focus();
+  };
+
+  openButtons.forEach((button) => {
+    button.addEventListener('click', () => openFilesPanel(button.dataset.openTab, button));
+  });
+
+  if (explorerButton) {
+    explorerButton.addEventListener('click', () => openFilesPanel('all', explorerButton));
+  }
+
+  closeButton?.addEventListener('click', closeFilesPanel);
+
+  filesGallery.addEventListener('click', (event) => {
+    if (event.target === filesGallery) closeFilesPanel();
+  });
 
   tabs.forEach((tab, index) => {
     tab.addEventListener('click', () => setActiveTab(tab.dataset.tab));
     tab.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') {
+      let nextIndex;
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+      if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+      if (event.key === 'Home') nextIndex = 0;
+      if (event.key === 'End') nextIndex = tabs.length - 1;
+      if (nextIndex !== undefined) {
         event.preventDefault();
-        moveTabFocus(index, 1);
-      }
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        moveTabFocus(index, -1);
-      }
-      if (event.key === 'Home') {
-        event.preventDefault();
-        const firstTab = tabs[0];
-        if (firstTab) {
-          setActiveTab(firstTab.dataset.tab);
-          firstTab.focus();
-        }
-      }
-      if (event.key === 'End') {
-        event.preventDefault();
-        const lastTab = tabs[tabs.length - 1];
-        if (lastTab) {
-          setActiveTab(lastTab.dataset.tab);
-          lastTab.focus();
-        }
+        const nextTab = tabs[nextIndex];
+        setActiveTab(nextTab.dataset.tab);
+        nextTab.focus();
       }
     });
   });
 
-  if (photoTile) {
-    photoTile.addEventListener('click', () => {
-      setActiveTab('photo');
-      filesGallery?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && filesGallery.classList.contains('is-open')) {
+      closeFilesPanel();
+    }
+  });
 
   setActiveTab('all');
 }
