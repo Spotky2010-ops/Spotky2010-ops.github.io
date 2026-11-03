@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="All photos from the Spotky2010-ops home screen gallery." />
+    <title>All Photos</title>
+    <style>
+      :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #0b1020; color: #eef3ff; }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 2rem; }
+      header { max-width: 1200px; margin: 0 auto 1.5rem; }
+      h1 { margin: 0 0 .4rem; }
+      p { color: #aebbd3; }
+      .gallery { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+      figure { margin: 0; overflow: hidden; border: 1px solid #29334b; border-radius: 14px; background: #141c30; }
+      figure img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+      figcaption { padding: .65rem .8rem; color: #cbd6e9; font-size: .85rem; }
+      .status { max-width: 1200px; margin: 1rem auto; }
+      a { color: #8bd5ff; }
+      @media (max-width: 600px) { body { padding: 1rem; } .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>All Photos</h1>
+      <p>Every unique photo shown in the home screen gallery, collected here without removing it from its original category.</p>
+      <a href="../">Back to home</a>
+    </header>
+    <p class="status" id="status" role="status">Loading photos…</p>
+    <main class="gallery" id="gallery" aria-label="All photos"></main>
+    <script>
+      (async () => {
+        const status = document.getElementById('status');
+        const gallery = document.getElementById('gallery');
+        try {
+          const response = await fetch('../index.html');
+          if (!response.ok) throw new Error(`Could not load gallery (${response.status}).`);
+          const html = await response.text();
+          const source = new DOMParser().parseFromString(html, 'text/html');
+          const images = [...source.querySelectorAll('.folder-card .thumb-photo')];
+          const unique = [...new Map(images.map((image) => [image.getAttribute('src'), image])).values()]
+            .filter((image) => image.getAttribute('src'));
+          for (const image of unique) {
+            const figure = document.createElement('figure');
+            const photo = document.createElement('img');
+            photo.src = image.getAttribute('src');
+            photo.alt = image.alt || 'Photo';
+            photo.loading = 'lazy';
+            const caption = document.createElement('figcaption');
+            caption.textContent = photo.alt;
+            figure.append(photo, caption);
+            gallery.append(figure);
+          }
+          status.textContent = `${unique.length} unique photos. The original category folders remain unchanged.`;
+        } catch (error) {
+          status.textContent = `Unable to load photos: ${error.message}`;
+        }
+      })();
+    </script>
+  </body>
+</html>
