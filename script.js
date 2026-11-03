@@ -538,6 +538,13 @@ function initFileTabs() {
 
   if (!tabs.length || !cards.length) return;
 
+  const photoTile = document.querySelector('[data-open-tab="photo"]');
+  const filesGallery = document.querySelector('.files-gallery');
+  const sectionHeader = filesGallery?.querySelector('.section-header');
+  if (photoTile && sectionHeader) {
+    sectionHeader.append(photoTile);
+  }
+
   const setActiveTab = (tabName) => {
     const activeTabName = normalizeTabName(tabName);
 
@@ -597,11 +604,10 @@ function initFileTabs() {
     });
   });
 
-  const photoTile = document.querySelector('[data-open-tab="photo"]');
   if (photoTile) {
     photoTile.addEventListener('click', () => {
       setActiveTab('photo');
-      document.querySelector('.files-gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      filesGallery?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
