@@ -19,7 +19,7 @@
         <div class="brand-wrap">
           <div class="brand-mark">W</div>
           <div>
-            <div class="app-label">Window 12.1 - Added Game, Terminal Panel.</div>
+            <div class="app-label">Window 12.2 - The Major Update.</div>
             <div class="brand-subtitle">Home</div>
           </div>
         </div>
@@ -106,7 +106,7 @@
             <span class="tile-icon">◌</span>
             <span>Photos</span>
           </button>
-          <button class="app-tile tile-windows" type="button">
+          <button class="app-tile tile-windows" id="windowAppsTile" type="button" aria-haspopup="dialog" aria-controls="windowAppsOverlay">
             <span class="tile-icon">⊞</span>
             <span>Window Apps</span>
           </button>
@@ -669,6 +669,66 @@
       </div>
     </div>
 
+    <div class="window-apps-overlay" id="windowAppsOverlay" aria-hidden="true">
+      <section class="window-apps-panel" role="dialog" aria-modal="true" aria-labelledby="windowAppsTitle">
+        <header class="game-header">
+          <div>
+            <div class="terminal-kicker">Window 12</div>
+            <h2 id="windowAppsTitle">Window Apps</h2>
+          </div>
+          <button class="settings-close" id="windowAppsClose" type="button" aria-label="Close Window Apps">×</button>
+        </header>
+        <div class="window-apps-content">
+          <div class="window-app-launcher" id="windowAppLauncher">
+            <button class="window-app-card" type="button" data-window-app="clock"><span class="window-app-icon">◷</span><strong>Clock</strong><small>Local time and date</small></button>
+            <button class="window-app-card" type="button" data-window-app="stopwatch"><span class="window-app-icon">⏱</span><strong>Stopwatch</strong><small>Track elapsed time</small></button>
+            <button class="window-app-card" type="button" data-window-app="timer"><span class="window-app-icon">◴</span><strong>Timer</strong><small>Set a countdown</small></button>
+            <button class="window-app-card" type="button" data-window-app="power"><span class="window-app-icon">⏻</span><strong>Power</strong><small>Sleep, restart, or shut down</small></button>
+            <button class="window-app-card" type="button" data-window-app="store"><span class="window-app-icon">▣</span><strong>Store</strong><small>Browse available apps</small></button>
+          </div>
+
+          <section class="window-app-view" data-window-app-view="clock" hidden>
+            <button class="game-back" type="button" data-window-app-back>← Window Apps</button>
+            <div class="utility-clock" id="utilityClockTime">--:--:--</div>
+            <p class="utility-date" id="utilityClockDate"></p>
+          </section>
+          <section class="window-app-view" data-window-app-view="stopwatch" hidden>
+            <button class="game-back" type="button" data-window-app-back>← Window Apps</button>
+            <div class="utility-timer" id="stopwatchDisplay">00:00.00</div>
+            <div class="utility-actions">
+              <button class="action-btn primary" id="stopwatchToggle" type="button">Start</button>
+              <button class="action-btn secondary" id="stopwatchReset" type="button">Reset</button>
+            </div>
+          </section>
+          <section class="window-app-view" data-window-app-view="timer" hidden>
+            <button class="game-back" type="button" data-window-app-back>← Window Apps</button>
+            <div class="timer-inputs">
+              <label>Minutes<input id="timerMinutes" type="number" min="0" max="999" value="5" inputmode="numeric"></label>
+              <span>:</span>
+              <label>Seconds<input id="timerSeconds" type="number" min="0" max="59" value="0" inputmode="numeric"></label>
+            </div>
+            <div class="utility-timer" id="timerDisplay" aria-live="polite">05:00</div>
+            <p class="utility-status" id="timerStatus" aria-live="polite">Ready</p>
+            <div class="utility-actions">
+              <button class="action-btn primary" id="timerToggle" type="button">Start</button>
+              <button class="action-btn secondary" id="timerReset" type="button">Reset</button>
+            </div>
+          </section>
+          <section class="window-app-view" data-window-app-view="store" hidden>
+            <button class="game-back" type="button" data-window-app-back>← Window Apps</button>
+            <p class="game-intro">Available apps</p>
+            <div class="store-app-list" id="storeAppList">
+              <article class="store-app"><span>▦</span><div><strong>Calendar</strong><small>Plan your days</small></div><button type="button" data-store-app="Calendar">Install</button></article>
+              <article class="store-app"><span>▤</span><div><strong>Notes</strong><small>Capture quick thoughts</small></div><button type="button" data-store-app="Notes">Install</button></article>
+              <article class="store-app"><span>▧</span><div><strong>Calculator</strong><small>Everyday calculations</small></div><button type="button" data-store-app="Calculator">Install</button></article>
+              <article class="store-app"><span>▨</span><div><strong>Paint</strong><small>A simple creative canvas</small></div><button type="button" data-store-app="Paint">Install</button></article>
+              <article class="store-app"><span>☼</span><div><strong>Weather</strong><small>Local conditions at a glance</small></div><button type="button" data-store-app="Weather">Install</button></article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+
     <div class="terminal-overlay" id="terminalOverlay" aria-hidden="true">
       <section class="terminal-panel" role="dialog" aria-modal="true" aria-labelledby="terminalTitle">
         <header class="terminal-header">
@@ -724,6 +784,26 @@
                 <span class="game-choice-icon game-choice-memory" aria-hidden="true">🃏</span>
                 <span class="game-choice-title">Memory Match</span>
                 <span class="game-choice-description">Find all eight matching pairs.</span>
+              </button>
+              <button class="game-choice" id="photoMemoryTile" type="button">
+                <span class="game-choice-icon game-choice-memory" aria-hidden="true">📷</span>
+                <span class="game-choice-title">Photo Memory</span>
+                <span class="game-choice-description">Match pairs from a random set of photos.</span>
+              </button>
+              <button class="game-choice" id="puzzleTile" type="button">
+                <span class="game-choice-icon game-choice-2048" aria-hidden="true">15</span>
+                <span class="game-choice-title">Sliding Puzzle</span>
+                <span class="game-choice-description">Arrange the tiles from 1 to 15.</span>
+              </button>
+              <button class="game-choice" id="cookieClickerTile" type="button">
+                <span class="game-choice-icon game-choice-snake" aria-hidden="true">🍪</span>
+                <span class="game-choice-title">Cookie Incremental</span>
+                <span class="game-choice-description">Click for cookies and buy automatic bakers.</span>
+              </button>
+              <button class="game-choice" id="idleGardenTile" type="button">
+                <span class="game-choice-icon game-choice-tictactoe" aria-hidden="true">🌱</span>
+                <span class="game-choice-title">Idle Garden</span>
+                <span class="game-choice-description">Grow petals and add self-watering plots.</span>
               </button>
             </div>
           </div>
@@ -791,6 +871,58 @@
               <button class="action-btn primary" id="memoryRestart" type="button">New game</button>
             </div>
           </section>
+
+          <section class="game-view" id="photoMemoryView" aria-label="Photo Memory game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn" id="photoMemoryMessage" aria-live="polite">Match the photo pairs.</span>
+            </div>
+            <div class="photo-memory-board" id="photoMemoryBoard" role="grid" aria-label="Photo memory cards"></div>
+            <div class="game-view-footer">
+              <span></span>
+              <button class="action-btn primary" id="photoMemoryRestart" type="button">New game</button>
+            </div>
+          </section>
+
+          <section class="game-view" id="puzzleView" aria-label="Sliding Puzzle game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn" id="puzzleMessage" aria-live="polite">Arrange the tiles in order.</span>
+            </div>
+            <div class="puzzle-board" id="puzzleBoard" role="grid" aria-label="Sliding puzzle board"></div>
+            <div class="game-view-footer">
+              <span id="puzzleMoves">Moves: 0</span>
+              <button class="action-btn primary" id="puzzleRestart" type="button">New puzzle</button>
+            </div>
+          </section>
+
+          <section class="game-view" id="cookieClickerView" aria-label="Cookie Incremental game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn">Incremental</span>
+            </div>
+            <div class="incremental-game">
+              <div class="incremental-count"><span id="cookieCount">0</span><small>cookies</small></div>
+              <button class="incremental-primary" id="bakeCookie" type="button" aria-label="Bake one cookie">🍪</button>
+              <p id="cookieRate">0 bakers per second</p>
+              <button class="action-btn primary" id="buyBaker" type="button">Hire baker · 10 cookies</button>
+              <p class="utility-status" id="cookieMessage" aria-live="polite">Tap the cookie to start.</p>
+            </div>
+          </section>
+
+          <section class="game-view" id="idleGardenView" aria-label="Idle Garden game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn">Incremental</span>
+            </div>
+            <div class="incremental-game">
+              <div class="incremental-count"><span id="petalCount">0</span><small>petals</small></div>
+              <button class="incremental-primary garden-primary" id="growPetal" type="button" aria-label="Grow one flower">🌼</button>
+              <p id="gardenRate">0 plots per second</p>
+              <button class="action-btn primary" id="buyPlot" type="button">Add plot · 15 petals</button>
+              <p class="utility-status" id="gardenMessage" aria-live="polite">Grow a flower to begin.</p>
+            </div>
+          </section>
         </div>
       </section>
     </div>
@@ -814,6 +946,8 @@
             <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎨</span><h3>Color Mixer</h3><button class="toy-action" type="button" data-toy="color">Mix a color</button><p class="toy-result" data-toy-result="color" aria-live="polite">A new color awaits</p></article>
             <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🥠</span><h3>Fortune Cookie</h3><button class="toy-action" type="button" data-toy="fortune">Open fortune</button><p class="toy-result" data-toy-result="fortune" aria-live="polite">Your fortune is sealed</p></article>
             <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🔘</span><h3>Click Counter</h3><button class="toy-action" type="button" data-toy="counter">Click</button><p class="toy-result" data-toy-result="counter" aria-live="polite">0 clicks</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎭</span><h3>Mood Mixer</h3><button class="toy-action" type="button" data-toy="mood">Mix a mood</button><p class="toy-result" data-toy-result="mood" aria-live="polite">See what turns up</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎯</span><h3>Number Orbit</h3><button class="toy-action" type="button" data-toy="number">Pick a number</button><p class="toy-result" data-toy-result="number" aria-live="polite">Choose from 1 to 100</p></article>
           </div>
         </div>
       </section>
