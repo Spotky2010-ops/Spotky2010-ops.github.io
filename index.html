@@ -19,7 +19,7 @@
         <div class="brand-wrap">
           <div class="brand-mark">W</div>
           <div>
-            <div class="app-label">Window 12.2 - The Major Update.</div>
+            <div class="app-label">Window 12.2.1 - The Minor Update.</div>
             <div class="brand-subtitle">Home</div>
           </div>
         </div>
@@ -78,9 +78,13 @@
 
       <section class="apps-section">
         <div class="apps-grid">
-          <button class="app-tile tile-blue" type="button">
+          <button class="app-tile tile-blue" id="cameraTile" type="button" aria-haspopup="dialog" aria-controls="cameraOverlay">
             <span class="tile-icon">📷</span>
             <span>Camera</span>
+          </button>
+          <button class="app-tile tile-cyan" id="calculatorTile" type="button" aria-haspopup="dialog" aria-controls="calculatorOverlay">
+            <span class="tile-icon">▦</span>
+            <span>Calculator</span>
           </button>
           <button class="app-tile tile-cyan" data-open-tab="all" type="button">
             <span class="tile-icon">▣</span>
@@ -422,7 +426,7 @@
         <button class="dock-item" aria-label="Explorer" type="button">
           <span>▣</span>
         </button>
-        <button class="dock-item" aria-label="Camera" type="button">
+        <button class="dock-item" id="dockCameraButton" aria-label="Camera" type="button" aria-haspopup="dialog" aria-controls="cameraOverlay">
           <span>📷</span>
         </button>
         <button class="dock-item" id="dockGamesButton" aria-label="Games" type="button" aria-haspopup="dialog" aria-controls="game2048Overlay">
@@ -725,6 +729,72 @@
               <article class="store-app"><span>☼</span><div><strong>Weather</strong><small>Local conditions at a glance</small></div><button type="button" data-store-app="Weather">Install</button></article>
             </div>
           </section>
+        </div>
+      </section>
+    </div>
+
+    <div class="calculator-overlay" id="calculatorOverlay" aria-hidden="true">
+      <section class="calculator-panel" role="dialog" aria-modal="true" aria-labelledby="calculatorTitle">
+        <header class="terminal-header">
+          <div class="terminal-title-wrap">
+            <div class="terminal-badge">▦</div>
+            <div>
+              <div class="terminal-kicker">Window 12</div>
+              <h2 id="calculatorTitle">Calculator</h2>
+            </div>
+          </div>
+          <button class="settings-close" id="closeCalculator" type="button" aria-label="Close calculator">×</button>
+        </header>
+        <div class="calculator-body">
+          <output class="calculator-display" id="calculatorDisplay" aria-live="polite" aria-label="Calculator display">0</output>
+          <div class="calculator-keys" id="calculatorKeys" aria-label="Calculator keys">
+            <button type="button" data-calc-action="clear">AC</button>
+            <button type="button" data-calc-action="backspace" aria-label="Backspace">⌫</button>
+            <button type="button" data-calc-value="(" aria-label="Open parenthesis">(</button>
+            <button class="operator" type="button" data-calc-value="/">÷</button>
+            <button type="button" data-calc-value="7">7</button>
+            <button type="button" data-calc-value="8">8</button>
+            <button type="button" data-calc-value="9">9</button>
+            <button class="operator" type="button" data-calc-value="*">×</button>
+            <button type="button" data-calc-value="4">4</button>
+            <button type="button" data-calc-value="5">5</button>
+            <button type="button" data-calc-value="6">6</button>
+            <button class="operator" type="button" data-calc-value="-">−</button>
+            <button type="button" data-calc-value="1">1</button>
+            <button type="button" data-calc-value="2">2</button>
+            <button type="button" data-calc-value="3">3</button>
+            <button class="operator" type="button" data-calc-value="+">+</button>
+            <button class="wide" type="button" data-calc-value="0">0</button>
+            <button type="button" data-calc-value=".">.</button>
+            <button class="equals" type="button" data-calc-action="equals">=</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="camera-overlay" id="cameraOverlay" aria-hidden="true">
+      <section class="camera-panel" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
+        <header class="terminal-header">
+          <div class="terminal-title-wrap">
+            <div class="terminal-badge">📷</div>
+            <div>
+              <div class="terminal-kicker">Window 12</div>
+              <h2 id="cameraTitle">Camera</h2>
+            </div>
+          </div>
+          <button class="settings-close" id="closeCamera" type="button" aria-label="Close camera">×</button>
+        </header>
+        <div class="camera-body">
+          <div class="camera-view">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <p id="cameraStatus" class="camera-status" role="status">Camera is off</p>
+          </div>
+          <canvas id="cameraCanvas" hidden></canvas>
+          <div class="camera-actions">
+            <button class="action-btn primary" id="capturePhoto" type="button" disabled>Take photo</button>
+            <a class="action-btn secondary" id="downloadPhoto" download="window12-photo.png" hidden>Download photo</a>
+          </div>
+          <img class="camera-preview" id="cameraPreview" alt="Captured photo" hidden />
         </div>
       </section>
     </div>
