@@ -10,9 +10,18 @@ const restartButton = document.getElementById('game2048Restart');
 const picker = document.getElementById('gamePicker');
 const game2048View = document.getElementById('game2048View');
 const ticTacToeView = document.getElementById('ticTacToeView');
+const snakeView = document.getElementById('snakeView');
+const memoryView = document.getElementById('memoryView');
 const ticTacToeButton = document.getElementById('ticTacToeTile');
 const ticTacToeBoard = document.getElementById('ticTacToeBoard');
 const ticTacToeMessage = document.getElementById('ticTacToeMessage');
+const snakeBoard = document.getElementById('snakeBoard');
+const snakeMessage = document.getElementById('snakeMessage');
+const snakeScoreElement = document.getElementById('snakeScore');
+const memoryBoard = document.getElementById('memoryBoard');
+const memoryMessage = document.getElementById('memoryMessage');
+const toysTile = document.getElementById('toysTile');
+const toysOverlay = document.getElementById('toysOverlay');
 const gamesButtons = [document.getElementById('gamesTile'), document.getElementById('dockGamesButton')];
 
 let board = [];
@@ -23,13 +32,28 @@ let activeGame = null;
 let ticTacToeState = Array(9).fill('');
 let ticTacToeTurn = 'X';
 let ticTacToeFinished = false;
+let snakeBody = [];
+let snakeDirection = 'right';
+let snakeNextDirection = 'right';
+let snakeFood = null;
+let snakeScore = 0;
+let snakeTimer = null;
+let memoryCards = [];
+let memoryFirstCard = null;
+let memoryLocked = false;
+let memoryMatches = 0;
+let memoryTimer = null;
+let bubbleCount = 0;
+let clickCount = 0;
 
 function showGameView(gameName) {
-  if (!picker || !game2048View || !ticTacToeView) return;
+  if (!picker || !game2048View || !ticTacToeView || !snakeView || !memoryView) return;
   activeGame = gameName;
   picker.hidden = true;
   game2048View.hidden = gameName !== '2048';
   ticTacToeView.hidden = gameName !== 'tic-tac-toe';
+  snakeView.hidden = gameName !== 'snake';
+  memoryView.hidden = gameName !== 'memory';
 }
 
 function updateBestScore() {
@@ -204,12 +228,16 @@ function openGamePanel() {
 
 function closeGamePanel() {
   if (!modal) return;
+  stopSnake();
+  window.clearTimeout(memoryTimer);
   modal.classList.remove('is-open');
   modal.setAttribute('aria-hidden', 'true');
   activeGame = null;
   picker.hidden = false;
   game2048View.hidden = true;
   ticTacToeView.hidden = true;
+  snakeView.hidden = true;
+  memoryView.hidden = true;
 }
 
 function startTicTacToe() {
@@ -252,6 +280,210 @@ function playTicTacToeCell(index) {
   }
 }
 
+function renderSnake() {
+  if (!snakeBoard) return;
+  const snakeCells = new Set(snakeBody.map((part) => `${part.x},${part.y}`));
+  snakeBoard.innerHTML = '';
+
+  for (let y = 0; y < 12; y += 1) {
+    for (let x = 0; x < 12; x += 1) {
+      const cell = document.createElement('div');
+      cell.className = 'snake-cell';
+      if (snakeCells.has(`${x},${y}`)) cell.classList.add('is-snake');
+      if (snakeFood && snakeFood.x === x && snakeFood.y === y) cell.classList.add('is-food');
+      snakeBoard.appendChild(cell);
+    }
+  }
+
+  if (snakeScoreElement) snakeScoreElement.textContent = String(snakeScore);
+}
+
+function placeSnakeFood() {
+  const emptyCells = [];
+  for (let y = 0; y < 12; y += 1) {
+    for (let x = 0; x < 12; x += 1) {
+      if (!snakeBody.some((part) => part.x === x && part.y === y)) emptyCells.push({ x, y });
+    }
+  }
+  snakeFood = emptyCells.length ? emptyCells[Math.floor(Math.random() * emptyCells.length)] : null;
+}
+
+function stopSnake() {
+  window.clearInterval(snakeTimer);
+  snakeTimer = null;
+}
+
+function setSnakeDirection(direction) {
+  const oppositeDirections = { up: 'down', down: 'up', left: 'right', right: 'left' };
+  if (direction !== oppositeDirections[snakeDirection] && direction !== oppositeDirections[snakeNextDirection]) {
+    snakeNextDirection = direction;
+  }
+}
+
+function moveSnake() {
+  snakeDirection = snakeNextDirection;
+  const moves = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  const [dx, dy] = moves[snakeDirection];
+  const head = { x: snakeBody[0].x + dx, y: snakeBody[0].y + dy };
+  const eatsFood = snakeFood && head.x === snakeFood.x && head.y === snakeFood.y;
+  const bodyToCheck = eatsFood ? snakeBody : snakeBody.slice(0, -1);
+
+  if (head.x < 0 || head.x >= 12 || head.y < 0 || head.y >= 12 || bodyToCheck.some((part) => part.x === head.x && part.y === head.y)) {
+    stopSnake();
+    snakeMessage.textContent = `Game over. Score: ${snakeScore}. Start a new game to try again.`;
+    return;
+  }
+
+  snakeBody.unshift(head);
+  if (eatsFood) {
+    snakeScore += 1;
+    if (snakeBody.length === 144) {
+      stopSnake();
+      snakeMessage.textContent = 'You filled the board. You win!';
+    } else {
+      placeSnakeFood();
+      snakeMessage.textContent = 'Nice! Keep going.';
+    }
+  } else {
+    snakeBody.pop();
+  }
+  renderSnake();
+}
+
+function startSnake() {
+  stopSnake();
+  snakeBody = [{ x: 5, y: 5 }, { x: 4, y: 5 }, { x: 3, y: 5 }];
+  snakeDirection = 'right';
+  snakeNextDirection = 'right';
+  snakeScore = 0;
+  snakeMessage.textContent = 'Use arrow keys or the direction controls.';
+  placeSnakeFood();
+  renderSnake();
+  snakeTimer = window.setInterval(moveSnake, 170);
+}
+
+function startMemoryGame() {
+  window.clearTimeout(memoryTimer);
+  memoryCards = ['🍋', '🍓', '🍉', '🍇', '🍊', '🥝', '🍒', '🍍']
+    .flatMap((symbol) => [{ symbol, matched: false }, { symbol, matched: false }]);
+  for (let index = memoryCards.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [memoryCards[index], memoryCards[randomIndex]] = [memoryCards[randomIndex], memoryCards[index]];
+  }
+  memoryFirstCard = null;
+  memoryLocked = false;
+  memoryMatches = 0;
+  memoryMessage.textContent = 'Find all eight matching pairs.';
+  renderMemoryCards();
+}
+
+function renderMemoryCards() {
+  if (!memoryBoard) return;
+  memoryBoard.innerHTML = '';
+  memoryCards.forEach((card, index) => {
+    const button = document.createElement('button');
+    button.className = 'memory-card';
+    button.type = 'button';
+    button.dataset.memoryIndex = String(index);
+    button.textContent = card.matched || card.flipped ? card.symbol : '?';
+    button.setAttribute('aria-label', card.matched || card.flipped ? card.symbol : `Hidden card ${index + 1}`);
+    button.disabled = card.matched || Boolean(card.flipped);
+    if (card.matched) button.classList.add('is-matched');
+    if (card.flipped) button.classList.add('is-flipped');
+    memoryBoard.appendChild(button);
+  });
+}
+
+function chooseMemoryCard(index) {
+  const card = memoryCards[index];
+  if (!card || card.matched || card.flipped || memoryLocked) return;
+  card.flipped = true;
+
+  if (memoryFirstCard === null) {
+    memoryFirstCard = index;
+    renderMemoryCards();
+    return;
+  }
+
+  const firstCardIndex = memoryFirstCard;
+  const firstCard = memoryCards[firstCardIndex];
+  memoryFirstCard = null;
+  if (firstCard.symbol === card.symbol) {
+    firstCard.matched = true;
+    card.matched = true;
+    memoryMatches += 1;
+    memoryMessage.textContent = memoryMatches === 8 ? 'You found every pair!' : `${memoryMatches} of 8 pairs found.`;
+    renderMemoryCards();
+    return;
+  }
+
+  memoryLocked = true;
+  renderMemoryCards();
+  memoryTimer = window.setTimeout(() => {
+    firstCard.flipped = false;
+    card.flipped = false;
+    memoryLocked = false;
+    renderMemoryCards();
+  }, 700);
+}
+
+function initToysPanel() {
+  const closeButton = document.getElementById('toysClose');
+  const toyGrid = document.getElementById('toyGrid');
+  if (!toysTile || !toysOverlay || !closeButton || !toyGrid) return;
+
+  const closePanel = () => {
+    toysOverlay.classList.remove('is-open');
+    toysOverlay.setAttribute('aria-hidden', 'true');
+  };
+
+  toysTile.addEventListener('click', () => {
+    toysOverlay.classList.add('is-open');
+    toysOverlay.setAttribute('aria-hidden', 'false');
+  });
+  closeButton.addEventListener('click', closePanel);
+  toysOverlay.addEventListener('click', (event) => {
+    if (event.target === toysOverlay) closePanel();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && toysOverlay.classList.contains('is-open')) closePanel();
+  });
+
+  toyGrid.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-toy]');
+    if (!button) return;
+    const result = toyGrid.querySelector(`[data-toy-result="${button.dataset.toy}"]`);
+    if (!result) return;
+
+    const choices = {
+      die: () => `You rolled ${Math.floor(Math.random() * 6) + 1}`,
+      coin: () => Math.random() < 0.5 ? 'Heads!' : 'Tails!',
+      magic: () => ['Yes, definitely.', 'Ask again soon.', 'The outlook is bright.', 'Not today.', 'Trust your instincts.'][Math.floor(Math.random() * 5)],
+      spin: () => 'Wheee!'
+    };
+    if (button.dataset.toy === 'bubble') {
+      bubbleCount += 1;
+      result.textContent = `${bubbleCount} popped`;
+    } else if (button.dataset.toy === 'counter') {
+      clickCount += 1;
+      result.textContent = `${clickCount} click${clickCount === 1 ? '' : 's'}`;
+    } else if (button.dataset.toy === 'color') {
+      const color = `hsl(${Math.floor(Math.random() * 360)} 75% 62%)`;
+      result.textContent = color;
+      button.closest('.toy-choice').style.setProperty('--toy-color', color);
+      button.closest('.toy-choice').classList.add('has-toy-color');
+    } else if (button.dataset.toy === 'fortune') {
+      result.textContent = ['A little curiosity goes a long way.', 'Good things are growing nearby.', 'Today is a fine day to begin.', 'Your next idea will surprise you.'][Math.floor(Math.random() * 4)];
+    } else {
+      result.textContent = choices[button.dataset.toy]();
+      if (button.dataset.toy === 'spin') {
+        const spinner = toyGrid.querySelector('[data-toy-icon="spinner"]');
+        spinner.style.transform = `rotate(${Math.floor(Math.random() * 360) + 720}deg)`;
+      }
+    }
+  });
+}
+
 function attachControls() {
   if (openButton) {
     openButton.addEventListener('click', () => {
@@ -267,12 +499,26 @@ function attachControls() {
     showGameView('tic-tac-toe');
   });
 
+  document.getElementById('snakeTile')?.addEventListener('click', () => {
+    showGameView('snake');
+    startSnake();
+  });
+
+  document.getElementById('memoryTile')?.addEventListener('click', () => {
+    showGameView('memory');
+    startMemoryGame();
+  });
+
   document.querySelectorAll('[data-game-back]').forEach((button) => {
     button.addEventListener('click', () => {
+      stopSnake();
+      window.clearTimeout(memoryTimer);
       activeGame = null;
       picker.hidden = false;
       game2048View.hidden = true;
       ticTacToeView.hidden = true;
+      snakeView.hidden = true;
+      memoryView.hidden = true;
     });
   });
 
@@ -282,6 +528,17 @@ function attachControls() {
   });
 
   document.getElementById('ticTacToeRestart')?.addEventListener('click', startTicTacToe);
+  document.getElementById('snakeRestart')?.addEventListener('click', startSnake);
+  document.getElementById('memoryRestart')?.addEventListener('click', startMemoryGame);
+
+  document.querySelectorAll('[data-snake-dir]').forEach((button) => {
+    button.addEventListener('click', () => setSnakeDirection(button.dataset.snakeDir));
+  });
+
+  memoryBoard?.addEventListener('click', (event) => {
+    const card = event.target.closest('[data-memory-index]');
+    if (card) chooseMemoryCard(Number(card.dataset.memoryIndex));
+  });
 
   if (closeButton) {
     closeButton.addEventListener('click', closeGamePanel);
@@ -302,7 +559,7 @@ function attachControls() {
   }
 
   document.addEventListener('keydown', (event) => {
-    if (!modal || !modal.classList.contains('is-open') || activeGame !== '2048') return;
+    if (!modal || !modal.classList.contains('is-open')) return;
 
     const keyMap = {
       ArrowLeft: 'left',
@@ -313,6 +570,13 @@ function attachControls() {
 
     const direction = keyMap[event.key];
     if (!direction) return;
+
+    if (activeGame === 'snake') {
+      event.preventDefault();
+      setSnakeDirection(direction);
+      return;
+    }
+    if (activeGame !== '2048') return;
 
     event.preventDefault();
     moveBoard(direction);
@@ -326,6 +590,7 @@ function attachControls() {
 }
 
 function init2048Game() {
+  initToysPanel();
   if (!boardElement) return;
   updateBestScore();
   attachControls();
