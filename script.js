@@ -536,6 +536,205 @@ function initSettingsPanel() {
   setActiveSettingsTab('general');
 }
 
+function evaluateCalculatorExpression(expression) {
+  const source = expression.replace(/\s+/g, '');
+  const tokens = source.match(/\d*\.?\d+|[()+\-*/]/g) || [];
+  if (!source || tokens.join('') !== source) throw new Error('Invalid expression');
+
+  let position = 0;
+  const parseFactor = () => {
+    const token = tokens[position++];
+    if (token === '+') return parseFactor();
+    if (token === '-') return -parseFactor();
+    if (token === '(') {
+      const value = parseExpression();
+      if (tokens[position++] !== ')') throw new Error('Missing closing parenthesis');
+      return value;
+    }
+    if (token === undefined || !/^\d*\.?\d+$/.test(token)) throw new Error('Invalid number');
+    return Number(token);
+  };
+  const parseTerm = () => {
+    let value = parseFactor();
+    while (tokens[position] === '*' || tokens[position] === '/') {
+      const operator = tokens[position++];
+      const nextValue = parseFactor();
+      value = operator === '*' ? value * nextValue : value / nextValue;
+    }
+    return value;
+  };
+  const parseExpression = () => {
+    let value = parseTerm();
+    while (tokens[position] === '+' || tokens[position] === '-') {
+      const operator = tokens[position++];
+      const nextValue = parseTerm();
+      value = operator === '+' ? value + nextValue : value - nextValue;
+    }
+    return value;
+  };
+
+  const result = parseExpression();
+  if (position !== tokens.length || !Number.isFinite(result)) throw new Error('Invalid result');
+  return Number(result.toPrecision(12)).toString();
+}
+
+function initCalculatorPanel() {
+  const tile = document.getElementById('calculatorTile');
+  const overlay = document.getElementById('calculatorOverlay');
+  const closeButton = document.getElementById('closeCalculator');
+  const display = document.getElementById('calculatorDisplay');
+  const keys = document.getElementById('calculatorKeys');
+  if (!tile || !overlay || !closeButton || !display || !keys) return;
+
+  let expression = '';
+  let resultShown = false;
+  const updateDisplay = (value = expression || '0') => {
+    display.textContent = value.replace(/\*/g, '×').replace(/\//g, '÷');
+  };
+  const enterValue = (value) => {
+    if (resultShown && /[\d.(]/.test(value)) expression = '';
+    resultShown = false;
+    expression += value;
+    updateDisplay();
+  };
+  const clear = () => {
+    expression = '';
+    resultShown = false;
+    updateDisplay();
+  };
+  const calculate = () => {
+    try {
+      expression = evaluateCalculatorExpression(expression);
+      resultShown = true;
+      updateDisplay(expression);
+    } catch {
+      expression = '';
+      resultShown = true;
+      updateDisplay('Error');
+    }
+  };
+  const close = () => {
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    tile.focus();
+  };
+
+  tile.addEventListener('click', () => {
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+  });
+  closeButton.addEventListener('click', close);
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) close();
+  });
+  keys.addEventListener('click', (event) => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    if (button.dataset.calcAction === 'clear') clear();
+    else if (button.dataset.calcAction === 'backspace') {
+      expression = expression.slice(0, -1);
+      resultShown = false;
+      updateDisplay();
+    } else if (button.dataset.calcAction === 'equals') calculate();
+    else if (button.dataset.calcValue) enterValue(button.dataset.calcValue);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (!overlay.classList.contains('is-open')) return;
+    if (event.key === 'Escape') close();
+    else if (event.key === 'Enter' || event.key === '=') {
+      event.preventDefault();
+      calculate();
+    } else if (event.key === 'Backspace') {
+      expression = expression.slice(0, -1);
+      resultShown = false;
+      updateDisplay();
+    } else if (/^[\d.+\-*/()]$/.test(event.key)) enterValue(event.key);
+  });
+}
+
+function initCameraPanel() {
+  const openButtons = [document.getElementById('cameraTile'), document.getElementById('dockCameraButton')].filter(Boolean);
+  const overlay = document.getElementById('cameraOverlay');
+  const closeButton = document.getElementById('closeCamera');
+  const video = document.getElementById('cameraVideo');
+  const status = document.getElementById('cameraStatus');
+  const captureButton = document.getElementById('capturePhoto');
+  const canvas = document.getElementById('cameraCanvas');
+  const preview = document.getElementById('cameraPreview');
+  const download = document.getElementById('downloadPhoto');
+  if (!openButtons.length || !overlay || !closeButton || !video || !status || !captureButton || !canvas || !preview || !download) return;
+
+  let stream = null;
+  let requestId = 0;
+  let lastOpener = openButtons[0];
+  const stopCamera = () => {
+    stream?.getTracks().forEach((track) => track.stop());
+    stream = null;
+    video.srcObject = null;
+    captureButton.disabled = true;
+  };
+  const close = () => {
+    requestId += 1;
+    stopCamera();
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    lastOpener.focus();
+  };
+  const open = async (opener) => {
+    lastOpener = opener;
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    status.hidden = false;
+    status.textContent = 'Requesting camera access...';
+    preview.hidden = true;
+    download.hidden = true;
+    const currentRequest = ++requestId;
+    stopCamera();
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      status.textContent = 'Camera access is not available in this browser or page context.';
+      return;
+    }
+    try {
+      const nextStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      if (currentRequest !== requestId) {
+        nextStream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+      stream = nextStream;
+      video.srcObject = stream;
+      status.hidden = true;
+      captureButton.disabled = false;
+    } catch (error) {
+      if (currentRequest !== requestId) return;
+      status.hidden = false;
+      status.textContent = error.name === 'NotAllowedError'
+        ? 'Camera permission was denied. Allow access in your browser settings to continue.'
+        : 'No camera could be started. Check that a camera is connected and available.';
+    }
+  };
+
+  openButtons.forEach((button) => button.addEventListener('click', () => open(button)));
+  closeButton.addEventListener('click', close);
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) close();
+  });
+  captureButton.addEventListener('click', () => {
+    if (!video.videoWidth || !video.videoHeight) return;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const imageUrl = canvas.toDataURL('image/png');
+    preview.src = imageUrl;
+    preview.hidden = false;
+    download.href = imageUrl;
+    download.hidden = false;
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && overlay.classList.contains('is-open')) close();
+  });
+}
+
 function initTerminalPanel() {
   const tile = document.getElementById('terminalTile');
   const overlay = document.getElementById('terminalOverlay');
@@ -1063,6 +1262,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   updateClock();
   initSettingsPanel();
+  initCalculatorPanel();
+  initCameraPanel();
   initTerminalPanel();
   initFileTabs();
   initPowerMenu();
