@@ -7,11 +7,30 @@ const modal = document.getElementById('game2048Overlay');
 const openButton = document.getElementById('game2048Tile');
 const closeButton = document.getElementById('game2048Close');
 const restartButton = document.getElementById('game2048Restart');
+const picker = document.getElementById('gamePicker');
+const game2048View = document.getElementById('game2048View');
+const ticTacToeView = document.getElementById('ticTacToeView');
+const ticTacToeButton = document.getElementById('ticTacToeTile');
+const ticTacToeBoard = document.getElementById('ticTacToeBoard');
+const ticTacToeMessage = document.getElementById('ticTacToeMessage');
+const gamesButtons = [document.getElementById('gamesTile'), document.getElementById('dockGamesButton')];
 
 let board = [];
 let score = 0;
 let bestScore = Number(localStorage.getItem('spotky-2048-best') || 0);
 let won = false;
+let activeGame = null;
+let ticTacToeState = Array(9).fill('');
+let ticTacToeTurn = 'X';
+let ticTacToeFinished = false;
+
+function showGameView(gameName) {
+  if (!picker || !game2048View || !ticTacToeView) return;
+  activeGame = gameName;
+  picker.hidden = true;
+  game2048View.hidden = gameName !== '2048';
+  ticTacToeView.hidden = gameName !== 'tic-tac-toe';
+}
 
 function updateBestScore() {
   bestElement.textContent = String(bestScore);
@@ -187,15 +206,82 @@ function closeGamePanel() {
   if (!modal) return;
   modal.classList.remove('is-open');
   modal.setAttribute('aria-hidden', 'true');
+  activeGame = null;
+  picker.hidden = false;
+  game2048View.hidden = true;
+  ticTacToeView.hidden = true;
+}
+
+function startTicTacToe() {
+  ticTacToeState = Array(9).fill('');
+  ticTacToeTurn = 'X';
+  ticTacToeFinished = false;
+  ticTacToeBoard.querySelectorAll('[data-cell]').forEach((cell) => {
+    cell.textContent = '';
+    cell.disabled = false;
+    cell.classList.remove('is-winner');
+  });
+  ticTacToeMessage.textContent = "X's turn";
+}
+
+function playTicTacToeCell(index) {
+  if (ticTacToeFinished || ticTacToeState[index]) return;
+  ticTacToeState[index] = ticTacToeTurn;
+  const cell = ticTacToeBoard.querySelector(`[data-cell="${index}"]`);
+  cell.textContent = ticTacToeTurn;
+  cell.disabled = true;
+
+  const winningLines = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+  ];
+  const winningLine = winningLines.find((line) => line.every((cellIndex) => ticTacToeState[cellIndex] === ticTacToeTurn));
+
+  if (winningLine) {
+    ticTacToeFinished = true;
+    ticTacToeMessage.textContent = `${ticTacToeTurn} wins!`;
+    winningLine.forEach((cellIndex) => ticTacToeBoard.querySelector(`[data-cell="${cellIndex}"]`).classList.add('is-winner'));
+    ticTacToeBoard.querySelectorAll('[data-cell]').forEach((boardCell) => { boardCell.disabled = true; });
+  } else if (ticTacToeState.every(Boolean)) {
+    ticTacToeFinished = true;
+    ticTacToeMessage.textContent = "It's a draw.";
+  } else {
+    ticTacToeTurn = ticTacToeTurn === 'X' ? 'O' : 'X';
+    ticTacToeMessage.textContent = `${ticTacToeTurn}'s turn`;
+  }
 }
 
 function attachControls() {
   if (openButton) {
     openButton.addEventListener('click', () => {
       if (!board.length) startGame();
-      openGamePanel();
+      showGameView('2048');
     });
   }
+
+  gamesButtons.forEach((button) => button?.addEventListener('click', openGamePanel));
+
+  ticTacToeButton?.addEventListener('click', () => {
+    startTicTacToe();
+    showGameView('tic-tac-toe');
+  });
+
+  document.querySelectorAll('[data-game-back]').forEach((button) => {
+    button.addEventListener('click', () => {
+      activeGame = null;
+      picker.hidden = false;
+      game2048View.hidden = true;
+      ticTacToeView.hidden = true;
+    });
+  });
+
+  ticTacToeBoard?.addEventListener('click', (event) => {
+    const cell = event.target.closest('[data-cell]');
+    if (cell) playTicTacToeCell(Number(cell.dataset.cell));
+  });
+
+  document.getElementById('ticTacToeRestart')?.addEventListener('click', startTicTacToe);
 
   if (closeButton) {
     closeButton.addEventListener('click', closeGamePanel);
@@ -216,7 +302,7 @@ function attachControls() {
   }
 
   document.addEventListener('keydown', (event) => {
-    if (!modal || !modal.classList.contains('is-open')) return;
+    if (!modal || !modal.classList.contains('is-open') || activeGame !== '2048') return;
 
     const keyMap = {
       ArrowLeft: 'left',
