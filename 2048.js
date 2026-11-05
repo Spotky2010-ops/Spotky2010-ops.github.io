@@ -12,6 +12,10 @@ const game2048View = document.getElementById('game2048View');
 const ticTacToeView = document.getElementById('ticTacToeView');
 const snakeView = document.getElementById('snakeView');
 const memoryView = document.getElementById('memoryView');
+const photoMemoryView = document.getElementById('photoMemoryView');
+const puzzleView = document.getElementById('puzzleView');
+const cookieClickerView = document.getElementById('cookieClickerView');
+const idleGardenView = document.getElementById('idleGardenView');
 const ticTacToeButton = document.getElementById('ticTacToeTile');
 const ticTacToeBoard = document.getElementById('ticTacToeBoard');
 const ticTacToeMessage = document.getElementById('ticTacToeMessage');
@@ -43,17 +47,40 @@ let memoryFirstCard = null;
 let memoryLocked = false;
 let memoryMatches = 0;
 let memoryTimer = null;
+let photoMemoryCards = [];
+let photoMemoryFirstCard = null;
+let photoMemoryLocked = false;
+let photoMemoryMatches = 0;
+let photoMemoryTimer = null;
+let puzzleTiles = [];
+let puzzleMoveCount = 0;
+let incrementalTimer = null;
+let cookieCount = 0;
+let bakerCount = 0;
+let bakerCost = 10;
+let petalCount = 0;
+let plotCount = 0;
+let plotCost = 15;
 let bubbleCount = 0;
 let clickCount = 0;
 
 function showGameView(gameName) {
-  if (!picker || !game2048View || !ticTacToeView || !snakeView || !memoryView) return;
+  if (!picker) return;
   activeGame = gameName;
   picker.hidden = true;
-  game2048View.hidden = gameName !== '2048';
-  ticTacToeView.hidden = gameName !== 'tic-tac-toe';
-  snakeView.hidden = gameName !== 'snake';
-  memoryView.hidden = gameName !== 'memory';
+  const gameViewIds = {
+    '2048': 'game2048View',
+    'tic-tac-toe': 'ticTacToeView',
+    snake: 'snakeView',
+    memory: 'memoryView',
+    'photo-memory': 'photoMemoryView',
+    puzzle: 'puzzleView',
+    'cookie-clicker': 'cookieClickerView',
+    'idle-garden': 'idleGardenView'
+  };
+  document.querySelectorAll('#game2048Overlay .game-view').forEach((view) => {
+    view.hidden = view.id !== gameViewIds[gameName];
+  });
 }
 
 function updateBestScore() {
@@ -230,14 +257,13 @@ function closeGamePanel() {
   if (!modal) return;
   stopSnake();
   window.clearTimeout(memoryTimer);
+  window.clearTimeout(photoMemoryTimer);
+  window.clearInterval(incrementalTimer);
   modal.classList.remove('is-open');
   modal.setAttribute('aria-hidden', 'true');
   activeGame = null;
   picker.hidden = false;
-  game2048View.hidden = true;
-  ticTacToeView.hidden = true;
-  snakeView.hidden = true;
-  memoryView.hidden = true;
+  document.querySelectorAll('#game2048Overlay .game-view').forEach((view) => { view.hidden = true; });
 }
 
 function startTicTacToe() {
@@ -427,6 +453,148 @@ function chooseMemoryCard(index) {
   }, 700);
 }
 
+function renderPhotoMemoryCards() {
+  const photoMemoryBoard = document.getElementById('photoMemoryBoard');
+  if (!photoMemoryBoard) return;
+  photoMemoryBoard.replaceChildren();
+  photoMemoryCards.forEach((card, index) => {
+    const button = document.createElement('button');
+    button.className = 'photo-memory-card';
+    button.type = 'button';
+    button.dataset.photoMemoryIndex = String(index);
+    button.setAttribute('aria-label', card.matched || card.flipped ? `Photo ${index + 1}` : `Hidden photo ${index + 1}`);
+    if (card.matched || card.flipped) {
+      const image = document.createElement('img');
+      image.src = card.src;
+      image.alt = `Photo pair ${card.pair + 1}`;
+      button.append(image);
+    } else {
+      button.textContent = '?';
+    }
+    button.disabled = card.matched || Boolean(card.flipped);
+    if (card.matched) button.classList.add('is-matched');
+    photoMemoryBoard.append(button);
+  });
+}
+
+function startPhotoMemoryGame() {
+  window.clearTimeout(photoMemoryTimer);
+  const sources = [...new Set(Array.from(document.querySelectorAll('.thumb-photo'), (image) => image.currentSrc || image.src))];
+  for (let index = sources.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [sources[index], sources[randomIndex]] = [sources[randomIndex], sources[index]];
+  }
+  const pairs = sources.slice(0, 8);
+  photoMemoryCards = pairs.flatMap((src, pair) => [{ src, pair, matched: false }, { src, pair, matched: false }]);
+  for (let index = photoMemoryCards.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [photoMemoryCards[index], photoMemoryCards[randomIndex]] = [photoMemoryCards[randomIndex], photoMemoryCards[index]];
+  }
+  photoMemoryFirstCard = null;
+  photoMemoryLocked = false;
+  photoMemoryMatches = 0;
+  document.getElementById('photoMemoryMessage').textContent = 'Match the photo pairs.';
+  renderPhotoMemoryCards();
+}
+
+function choosePhotoMemoryCard(index) {
+  const card = photoMemoryCards[index];
+  if (!card || card.matched || card.flipped || photoMemoryLocked) return;
+  card.flipped = true;
+  if (photoMemoryFirstCard === null) {
+    photoMemoryFirstCard = index;
+    renderPhotoMemoryCards();
+    return;
+  }
+  const firstIndex = photoMemoryFirstCard;
+  const firstCard = photoMemoryCards[firstIndex];
+  photoMemoryFirstCard = null;
+  if (firstCard.pair === card.pair) {
+    firstCard.matched = true;
+    card.matched = true;
+    photoMemoryMatches += 1;
+    document.getElementById('photoMemoryMessage').textContent = photoMemoryMatches === 8 ? 'You found every photo pair!' : `${photoMemoryMatches} of 8 pairs found.`;
+    renderPhotoMemoryCards();
+    return;
+  }
+  photoMemoryLocked = true;
+  renderPhotoMemoryCards();
+  photoMemoryTimer = window.setTimeout(() => {
+    firstCard.flipped = false;
+    card.flipped = false;
+    photoMemoryLocked = false;
+    renderPhotoMemoryCards();
+  }, 800);
+}
+
+function renderPuzzle() {
+  const puzzleBoard = document.getElementById('puzzleBoard');
+  if (!puzzleBoard) return;
+  puzzleBoard.replaceChildren();
+  puzzleTiles.forEach((value, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'puzzle-cell';
+    button.dataset.puzzleIndex = String(index);
+    button.textContent = value ? String(value) : '';
+    button.setAttribute('aria-label', value ? `Tile ${value}` : 'Empty space');
+    button.disabled = !value || !canMovePuzzleTile(index);
+    if (!value) button.classList.add('is-empty');
+    puzzleBoard.append(button);
+  });
+  document.getElementById('puzzleMoves').textContent = `Moves: ${puzzleMoveCount}`;
+}
+
+function canMovePuzzleTile(index) {
+  const emptyIndex = puzzleTiles.indexOf(0);
+  return Math.abs(Math.floor(index / 4) - Math.floor(emptyIndex / 4)) + Math.abs((index % 4) - (emptyIndex % 4)) === 1;
+}
+
+function movePuzzleTile(index) {
+  if (!canMovePuzzleTile(index)) return;
+  const emptyIndex = puzzleTiles.indexOf(0);
+  [puzzleTiles[index], puzzleTiles[emptyIndex]] = [puzzleTiles[emptyIndex], puzzleTiles[index]];
+  puzzleMoveCount += 1;
+  renderPuzzle();
+  if (puzzleTiles.every((value, tileIndex) => value === (tileIndex === 15 ? 0 : tileIndex + 1))) {
+    document.getElementById('puzzleMessage').textContent = `Solved in ${puzzleMoveCount} moves!`;
+  }
+}
+
+function startPuzzle() {
+  puzzleTiles = Array.from({ length: 16 }, (_, index) => index === 15 ? 0 : index + 1);
+  let previousEmpty = -1;
+  for (let move = 0; move < 100; move += 1) {
+    const emptyIndex = puzzleTiles.indexOf(0);
+    const candidates = puzzleTiles.map((_, index) => index).filter((index) => canMovePuzzleTile(index) && index !== previousEmpty);
+    const nextIndex = candidates[Math.floor(Math.random() * candidates.length)];
+    previousEmpty = emptyIndex;
+    [puzzleTiles[nextIndex], puzzleTiles[emptyIndex]] = [puzzleTiles[emptyIndex], puzzleTiles[nextIndex]];
+  }
+  puzzleMoveCount = 0;
+  document.getElementById('puzzleMessage').textContent = 'Arrange the tiles in order.';
+  renderPuzzle();
+}
+
+function renderIncrementalGames() {
+  document.getElementById('cookieCount').textContent = String(Math.floor(cookieCount));
+  document.getElementById('cookieRate').textContent = `${bakerCount} baker${bakerCount === 1 ? '' : 's'} per second`;
+  document.getElementById('buyBaker').textContent = `Hire baker · ${bakerCost} cookies`;
+  document.getElementById('petalCount').textContent = String(Math.floor(petalCount));
+  document.getElementById('gardenRate').textContent = `${plotCount} plot${plotCount === 1 ? '' : 's'} per second`;
+  document.getElementById('buyPlot').textContent = `Add plot · ${plotCost} petals`;
+}
+
+function startIncrementalGame(gameName) {
+  window.clearInterval(incrementalTimer);
+  renderIncrementalGames();
+  incrementalTimer = window.setInterval(() => {
+    if (gameName === 'cookie-clicker') cookieCount += bakerCount;
+    if (gameName === 'idle-garden') petalCount += plotCount;
+    renderIncrementalGames();
+  }, 1000);
+}
+
 function initToysPanel() {
   const closeButton = document.getElementById('toysClose');
   const toyGrid = document.getElementById('toyGrid');
@@ -459,7 +627,9 @@ function initToysPanel() {
       die: () => `You rolled ${Math.floor(Math.random() * 6) + 1}`,
       coin: () => Math.random() < 0.5 ? 'Heads!' : 'Tails!',
       magic: () => ['Yes, definitely.', 'Ask again soon.', 'The outlook is bright.', 'Not today.', 'Trust your instincts.'][Math.floor(Math.random() * 5)],
-      spin: () => 'Wheee!'
+      spin: () => 'Wheee!',
+      mood: () => ['Curious', 'Focused', 'Playful', 'Calm', 'Bold', 'Dreamy'][Math.floor(Math.random() * 6)],
+      number: () => `Your number is ${Math.floor(Math.random() * 100) + 1}`
     };
     if (button.dataset.toy === 'bubble') {
       bubbleCount += 1;
@@ -509,16 +679,35 @@ function attachControls() {
     startMemoryGame();
   });
 
+  document.getElementById('photoMemoryTile')?.addEventListener('click', () => {
+    showGameView('photo-memory');
+    startPhotoMemoryGame();
+  });
+
+  document.getElementById('puzzleTile')?.addEventListener('click', () => {
+    showGameView('puzzle');
+    startPuzzle();
+  });
+
+  document.getElementById('cookieClickerTile')?.addEventListener('click', () => {
+    showGameView('cookie-clicker');
+    startIncrementalGame('cookie-clicker');
+  });
+
+  document.getElementById('idleGardenTile')?.addEventListener('click', () => {
+    showGameView('idle-garden');
+    startIncrementalGame('idle-garden');
+  });
+
   document.querySelectorAll('[data-game-back]').forEach((button) => {
     button.addEventListener('click', () => {
       stopSnake();
       window.clearTimeout(memoryTimer);
+      window.clearTimeout(photoMemoryTimer);
+      window.clearInterval(incrementalTimer);
       activeGame = null;
       picker.hidden = false;
-      game2048View.hidden = true;
-      ticTacToeView.hidden = true;
-      snakeView.hidden = true;
-      memoryView.hidden = true;
+      document.querySelectorAll('#game2048Overlay .game-view').forEach((view) => { view.hidden = true; });
     });
   });
 
@@ -538,6 +727,47 @@ function attachControls() {
   memoryBoard?.addEventListener('click', (event) => {
     const card = event.target.closest('[data-memory-index]');
     if (card) chooseMemoryCard(Number(card.dataset.memoryIndex));
+  });
+
+  document.getElementById('photoMemoryBoard')?.addEventListener('click', (event) => {
+    const card = event.target.closest('[data-photo-memory-index]');
+    if (card) choosePhotoMemoryCard(Number(card.dataset.photoMemoryIndex));
+  });
+  document.getElementById('photoMemoryRestart')?.addEventListener('click', startPhotoMemoryGame);
+  document.getElementById('puzzleBoard')?.addEventListener('click', (event) => {
+    const tile = event.target.closest('[data-puzzle-index]');
+    if (tile) movePuzzleTile(Number(tile.dataset.puzzleIndex));
+  });
+  document.getElementById('puzzleRestart')?.addEventListener('click', startPuzzle);
+  document.getElementById('bakeCookie')?.addEventListener('click', () => {
+    cookieCount += 1;
+    renderIncrementalGames();
+  });
+  document.getElementById('buyBaker')?.addEventListener('click', () => {
+    if (cookieCount < bakerCost) {
+      document.getElementById('cookieMessage').textContent = `Need ${bakerCost - Math.floor(cookieCount)} more cookies.`;
+      return;
+    }
+    cookieCount -= bakerCost;
+    bakerCount += 1;
+    bakerCost = Math.ceil(bakerCost * 1.65);
+    document.getElementById('cookieMessage').textContent = 'Your baker is on the job.';
+    renderIncrementalGames();
+  });
+  document.getElementById('growPetal')?.addEventListener('click', () => {
+    petalCount += 1;
+    renderIncrementalGames();
+  });
+  document.getElementById('buyPlot')?.addEventListener('click', () => {
+    if (petalCount < plotCost) {
+      document.getElementById('gardenMessage').textContent = `Need ${plotCost - Math.floor(petalCount)} more petals.`;
+      return;
+    }
+    petalCount -= plotCost;
+    plotCount += 1;
+    plotCost = Math.ceil(plotCost * 1.6);
+    document.getElementById('gardenMessage').textContent = 'Your plot is growing on its own.';
+    renderIncrementalGames();
   });
 
   if (closeButton) {
@@ -576,6 +806,16 @@ function attachControls() {
       setSnakeDirection(direction);
       return;
     }
+    if (activeGame === 'puzzle') {
+      const emptyIndex = puzzleTiles.indexOf(0);
+      const offsets = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -4, ArrowDown: 4 };
+      const tileIndex = emptyIndex + offsets[event.key];
+      if (tileIndex >= 0 && tileIndex < puzzleTiles.length) {
+        event.preventDefault();
+        movePuzzleTile(tileIndex);
+      }
+      return;
+    }
     if (activeGame !== '2048') return;
 
     event.preventDefault();
@@ -594,6 +834,7 @@ function init2048Game() {
   if (!boardElement) return;
   updateBestScore();
   attachControls();
+  renderIncrementalGames();
   startGame();
 }
 
