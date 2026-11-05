@@ -86,7 +86,7 @@
             <span class="tile-icon">▣</span>
             <span>Files</span>
           </button>
-          <button class="app-tile tile-violet" type="button">
+          <button class="app-tile tile-violet" id="toysTile" type="button" aria-haspopup="dialog" aria-controls="toysOverlay">
             <span class="tile-icon">⌘</span>
             <span>Toys</span>
           </button>
@@ -715,6 +715,16 @@
                 <span class="game-choice-title">Tic-Tac-Toe</span>
                 <span class="game-choice-description">Take turns and get three in a row.</span>
               </button>
+              <button class="game-choice" id="snakeTile" type="button">
+                <span class="game-choice-icon game-choice-snake" aria-hidden="true">🐍</span>
+                <span class="game-choice-title">Snake</span>
+                <span class="game-choice-description">Collect food and avoid the walls.</span>
+              </button>
+              <button class="game-choice" id="memoryTile" type="button">
+                <span class="game-choice-icon game-choice-memory" aria-hidden="true">🃏</span>
+                <span class="game-choice-title">Memory Match</span>
+                <span class="game-choice-description">Find all eight matching pairs.</span>
+              </button>
             </div>
           </div>
 
@@ -751,6 +761,60 @@
               <button class="action-btn primary" id="ticTacToeRestart" type="button">New game</button>
             </div>
           </section>
+
+          <section class="game-view" id="snakeView" aria-label="Snake game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn">Score <strong id="snakeScore">0</strong></span>
+            </div>
+            <div class="snake-board" id="snakeBoard" role="grid" aria-label="Snake game board"></div>
+            <div class="snake-controls" aria-label="Snake direction controls">
+              <button type="button" data-snake-dir="up" aria-label="Move up">↑</button>
+              <button type="button" data-snake-dir="left" aria-label="Move left">←</button>
+              <button type="button" data-snake-dir="down" aria-label="Move down">↓</button>
+              <button type="button" data-snake-dir="right" aria-label="Move right">→</button>
+            </div>
+            <div class="game-view-footer">
+              <p id="snakeMessage" aria-live="polite">Use arrow keys to play.</p>
+              <button class="action-btn primary" id="snakeRestart" type="button">New game</button>
+            </div>
+          </section>
+
+          <section class="game-view" id="memoryView" aria-label="Memory Match game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn" id="memoryMessage" aria-live="polite">Find all matching pairs.</span>
+            </div>
+            <div class="memory-board" id="memoryBoard" role="grid" aria-label="Memory Match cards"></div>
+            <div class="game-view-footer">
+              <span></span>
+              <button class="action-btn primary" id="memoryRestart" type="button">New game</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+
+    <div class="game-overlay" id="toysOverlay" aria-hidden="true">
+      <section class="game-panel toys-panel" role="dialog" aria-modal="true" aria-labelledby="toysTitle">
+        <header class="game-header">
+          <div>
+            <div class="terminal-kicker">Window 12</div>
+            <h2 id="toysTitle">Toy Box</h2>
+          </div>
+          <button class="settings-close" id="toysClose" type="button" aria-label="Close toys">×</button>
+        </header>
+        <div class="game-content">
+          <div class="toy-grid" id="toyGrid">
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🫧</span><h3>Bubble Pop</h3><button class="toy-action" type="button" data-toy="bubble">Pop a bubble</button><p class="toy-result" data-toy-result="bubble" aria-live="polite">0 popped</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎲</span><h3>Lucky Die</h3><button class="toy-action" type="button" data-toy="die">Roll</button><p class="toy-result" data-toy-result="die" aria-live="polite">Ready to roll</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🪙</span><h3>Coin Flip</h3><button class="toy-action" type="button" data-toy="coin">Flip</button><p class="toy-result" data-toy-result="coin" aria-live="polite">Heads or tails?</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🔮</span><h3>Magic 8</h3><button class="toy-action" type="button" data-toy="magic">Ask a question</button><p class="toy-result" data-toy-result="magic" aria-live="polite">The answer is waiting</p></article>
+            <article class="toy-choice"><span class="toy-icon toy-spinner" data-toy-icon="spinner" aria-hidden="true">🌀</span><h3>Spin It</h3><button class="toy-action" type="button" data-toy="spin">Spin</button><p class="toy-result" data-toy-result="spin" aria-live="polite">Give it a whirl</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎨</span><h3>Color Mixer</h3><button class="toy-action" type="button" data-toy="color">Mix a color</button><p class="toy-result" data-toy-result="color" aria-live="polite">A new color awaits</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🥠</span><h3>Fortune Cookie</h3><button class="toy-action" type="button" data-toy="fortune">Open fortune</button><p class="toy-result" data-toy-result="fortune" aria-live="polite">Your fortune is sealed</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🔘</span><h3>Click Counter</h3><button class="toy-action" type="button" data-toy="counter">Click</button><p class="toy-result" data-toy-result="counter" aria-live="polite">0 clicks</p></article>
+          </div>
         </div>
       </section>
     </div>
