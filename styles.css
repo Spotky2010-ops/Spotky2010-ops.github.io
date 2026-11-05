@@ -231,8 +231,8 @@ body[data-theme="light"] .power-panel { background: rgba(255, 255, 255, calc(var
 .power-button { margin-left: 6px; }
 .scroll-controls { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); display: grid; gap: 10px; z-index:11; }
 .scroll-control { width: 42px; height: 42px; border-radius: 12px; color: var(--text); font-size: 1.15rem; }
-.settings-overlay, .power-overlay, .terminal-overlay, .game-overlay, .window-apps-overlay, .blackout-screen, .lightbox { position: fixed; inset: 0; background: rgba(2, 7, 15, 0.48); backdrop-filter: blur(14px); opacity:0; pointer-events:none; transition: opacity 0.2s ease; z-index:30; }
-.settings-overlay.is-open, .power-overlay.is-open, .terminal-overlay.is-open, .game-overlay.is-open, .window-apps-overlay.is-open, .blackout-screen.is-visible, .lightbox.is-open { opacity:1; pointer-events: auto; }
+.settings-overlay, .power-overlay, .terminal-overlay, .game-overlay, .window-apps-overlay, .calculator-overlay, .camera-overlay, .blackout-screen, .lightbox { position: fixed; inset: 0; background: rgba(2, 7, 15, 0.48); backdrop-filter: blur(14px); opacity:0; pointer-events:none; transition: opacity 0.2s ease; z-index:30; }
+.settings-overlay.is-open, .power-overlay.is-open, .terminal-overlay.is-open, .game-overlay.is-open, .window-apps-overlay.is-open, .calculator-overlay.is-open, .camera-overlay.is-open, .blackout-screen.is-visible, .lightbox.is-open { opacity:1; pointer-events: auto; }
 .settings-panel, .power-panel, .terminal-panel, .game-panel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 24px; width: min(800px, calc(100vw - 30px)); overflow:hidden; background: rgba(11,17,26,0.9); }
 .power-panel { width: min(520px, calc(100vw - 30px)); }
 .window-apps-panel { position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); width:min(760px, calc(100vw - 30px)); max-height:min(86vh, 760px); overflow:auto; border:1px solid var(--stroke); border-radius:24px; background:rgba(11,17,26,0.94); box-shadow:0 24px 70px rgba(0,0,0,0.38); }
@@ -257,6 +257,23 @@ body[data-theme="light"] .power-panel { background: rgba(255, 255, 255, calc(var
 .store-app > div { display:grid; gap:3px; }
 .store-app button { min-width:78px; padding:7px 10px; border:1px solid var(--stroke-soft); border-radius:8px; background:rgba(255,255,255,0.07); color:var(--text); }
 .terminal-panel { width: min(760px, calc(100vw - 30px)); border: 1px solid var(--stroke); box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38); }
+.calculator-panel, .camera-panel { position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); width:min(420px, calc(100vw - 30px)); overflow:hidden; border:1px solid var(--stroke); border-radius:24px; background:rgba(11,17,26,0.94); box-shadow:0 24px 70px rgba(0,0,0,0.38); color:var(--text); }
+.calculator-body { padding:16px; }
+.calculator-display { display:flex; align-items:center; justify-content:flex-end; min-height:76px; margin-bottom:12px; padding:12px; overflow:hidden; border:1px solid var(--stroke-soft); border-radius:12px; background:rgba(0,0,0,0.2); color:var(--text); font-size:2rem; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.calculator-keys { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
+.calculator-keys button { min-height:54px; border:1px solid var(--stroke-soft); border-radius:12px; background:rgba(255,255,255,0.05); color:var(--text); font-size:1.05rem; }
+.calculator-keys button:hover { background:rgba(255,255,255,0.12); }
+.calculator-keys button.operator { color:var(--accent-1); }
+.calculator-keys button.equals { border-color:var(--stroke); background:var(--accent-soft); font-weight:700; }
+.calculator-keys button.wide { grid-column:span 2; }
+.camera-panel { width:min(720px, calc(100vw - 30px)); }
+.camera-body { padding:16px; }
+.camera-view { position:relative; display:grid; place-items:center; min-height:220px; aspect-ratio:4 / 3; overflow:hidden; border:1px solid var(--stroke-soft); border-radius:14px; background:#080d13; }
+.camera-view video { width:100%; height:100%; max-height:58vh; object-fit:contain; }
+.camera-status { position:absolute; margin:0; padding:8px 12px; border-radius:10px; background:rgba(0,0,0,0.62); color:#fff; text-align:center; }
+.camera-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; margin-top:12px; }
+.camera-actions [hidden], .camera-preview[hidden] { display:none; }
+.camera-preview { display:block; max-width:100%; max-height:38vh; margin:14px auto 0; border-radius:12px; }
 .terminal-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px 12px; border-bottom:1px solid var(--stroke-soft); }
 .terminal-title-wrap { display:flex; align-items:center; gap:12px; }
 .terminal-badge { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:linear-gradient(135deg, var(--accent-1), var(--accent-2)); color:#05161d; font-weight:900; }
