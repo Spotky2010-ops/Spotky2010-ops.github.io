@@ -536,6 +536,89 @@ function initSettingsPanel() {
   setActiveSettingsTab('general');
 }
 
+function initTerminalPanel() {
+  const tile = document.getElementById('terminalTile');
+  const overlay = document.getElementById('terminalOverlay');
+  const closeButton = document.getElementById('closeTerminal');
+  const output = document.getElementById('terminalOutput');
+  const form = document.getElementById('terminalForm');
+  const input = document.getElementById('terminalInput');
+
+  if (!tile || !overlay || !output || !form || !input) return;
+
+  const writeLine = (text, className = '') => {
+    const line = document.createElement('p');
+    line.className = `terminal-line ${className}`.trim();
+    line.textContent = text;
+    output.append(line);
+    output.scrollTop = output.scrollHeight;
+  };
+
+  const openTerminal = () => {
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    input.focus();
+  };
+
+  const closeTerminalPanel = () => {
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    tile.focus();
+  };
+
+  writeLine('Window 12 Terminal [simulated]');
+  writeLine('Type "help" to see available commands.');
+
+  tile.addEventListener('click', openTerminal);
+  closeButton?.addEventListener('click', closeTerminalPanel);
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) closeTerminalPanel();
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const command = input.value.trim();
+    if (!command) return;
+
+    writeLine(`spotky@window12:~$ ${command}`, 'command');
+    const [name, ...args] = command.split(/\s+/);
+
+    switch (name.toLowerCase()) {
+      case 'help':
+        writeLine('Available: help, clear, date, echo, ls, pwd, whoami');
+        break;
+      case 'clear':
+        output.replaceChildren();
+        break;
+      case 'date':
+        writeLine(new Date().toString());
+        break;
+      case 'echo':
+        writeLine(args.join(' '));
+        break;
+      case 'ls':
+        writeLine('Desktop  Documents  Downloads  Pictures');
+        break;
+      case 'pwd':
+        writeLine('/home/spotky');
+        break;
+      case 'whoami':
+        writeLine('spotky');
+        break;
+      default:
+        writeLine(`${name}: command not found. Type "help" for available commands.`, 'error');
+    }
+
+    input.value = '';
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && overlay.classList.contains('is-open')) {
+      closeTerminalPanel();
+    }
+  });
+}
+
 function initFileTabs() {
   const tabs = document.querySelectorAll('.files-tab');
   const cards = document.querySelectorAll('.folder-card');
@@ -826,6 +909,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   updateClock();
   initSettingsPanel();
+  initTerminalPanel();
   initFileTabs();
   initPowerMenu();
   initImageLightbox();
