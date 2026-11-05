@@ -864,6 +864,160 @@ function initPowerMenu() {
   setPowerAction(selectedPowerAction);
 }
 
+function initWindowApps() {
+  const tile = document.getElementById('windowAppsTile');
+  const overlay = document.getElementById('windowAppsOverlay');
+  const closeButton = document.getElementById('windowAppsClose');
+  const launcher = document.getElementById('windowAppLauncher');
+  if (!tile || !overlay || !launcher || !closeButton) return;
+
+  const views = overlay.querySelectorAll('[data-window-app-view]');
+  const showView = (name) => {
+    launcher.hidden = Boolean(name);
+    views.forEach((view) => { view.hidden = view.dataset.windowAppView !== name; });
+  };
+  const openPanel = () => {
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    showView('');
+    closeButton.focus();
+  };
+  const closePanel = () => {
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    tile.focus();
+  };
+
+  let stopwatchStartedAt = 0;
+  let stopwatchElapsed = 0;
+  let stopwatchInterval = null;
+  const stopwatchDisplay = document.getElementById('stopwatchDisplay');
+  const stopwatchToggle = document.getElementById('stopwatchToggle');
+  const renderStopwatch = () => {
+    const elapsed = stopwatchElapsed + (stopwatchInterval ? performance.now() - stopwatchStartedAt : 0);
+    const centiseconds = Math.floor(elapsed / 10);
+    const minutes = String(Math.floor(centiseconds / 6000)).padStart(2, '0');
+    const seconds = String(Math.floor(centiseconds / 100) % 60).padStart(2, '0');
+    const fraction = String(centiseconds % 100).padStart(2, '0');
+    stopwatchDisplay.textContent = `${minutes}:${seconds}.${fraction}`;
+  };
+  stopwatchToggle?.addEventListener('click', () => {
+    if (stopwatchInterval) {
+      stopwatchElapsed += performance.now() - stopwatchStartedAt;
+      window.clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+      stopwatchToggle.textContent = 'Start';
+      renderStopwatch();
+      return;
+    }
+    stopwatchStartedAt = performance.now();
+    stopwatchInterval = window.setInterval(renderStopwatch, 20);
+    stopwatchToggle.textContent = 'Pause';
+  });
+  document.getElementById('stopwatchReset')?.addEventListener('click', () => {
+    window.clearInterval(stopwatchInterval);
+    stopwatchInterval = null;
+    stopwatchElapsed = 0;
+    stopwatchToggle.textContent = 'Start';
+    renderStopwatch();
+  });
+
+  let timerInterval = null;
+  let timerRemaining = 0;
+  const timerMinutes = document.getElementById('timerMinutes');
+  const timerSeconds = document.getElementById('timerSeconds');
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerStatus = document.getElementById('timerStatus');
+  const timerToggle = document.getElementById('timerToggle');
+  const renderTimer = () => {
+    const minutes = String(Math.floor(timerRemaining / 60)).padStart(2, '0');
+    const seconds = String(timerRemaining % 60).padStart(2, '0');
+    timerDisplay.textContent = `${minutes}:${seconds}`;
+  };
+  const resetTimer = () => {
+    window.clearInterval(timerInterval);
+    timerInterval = null;
+    const minutes = Math.min(999, Math.max(0, Math.floor(Number(timerMinutes.value) || 0)));
+    const seconds = Math.min(59, Math.max(0, Math.floor(Number(timerSeconds.value) || 0)));
+    timerMinutes.value = String(minutes);
+    timerSeconds.value = String(seconds);
+    timerRemaining = minutes * 60 + seconds;
+    renderTimer();
+    timerStatus.textContent = 'Ready';
+    timerToggle.textContent = 'Start';
+  };
+  timerToggle?.addEventListener('click', () => {
+    if (timerInterval) {
+      window.clearInterval(timerInterval);
+      timerInterval = null;
+      timerStatus.textContent = 'Paused';
+      timerToggle.textContent = 'Resume';
+      return;
+    }
+    if (timerRemaining === 0) resetTimer();
+    if (timerRemaining === 0) {
+      timerStatus.textContent = 'Set a duration first';
+      return;
+    }
+    timerStatus.textContent = 'Counting down';
+    timerToggle.textContent = 'Pause';
+    timerInterval = window.setInterval(() => {
+      timerRemaining -= 1;
+      renderTimer();
+      if (timerRemaining <= 0) {
+        window.clearInterval(timerInterval);
+        timerInterval = null;
+        timerRemaining = 0;
+        timerStatus.textContent = 'Time is up';
+        timerToggle.textContent = 'Start';
+        renderTimer();
+      }
+    }, 1000);
+  });
+  document.getElementById('timerReset')?.addEventListener('click', resetTimer);
+  [timerMinutes, timerSeconds].forEach((input) => input?.addEventListener('change', resetTimer));
+
+  const renderClock = () => {
+    const now = new Date();
+    document.getElementById('utilityClockTime').textContent = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('utilityClockDate').textContent = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  };
+  renderClock();
+  window.setInterval(renderClock, 1000);
+
+  launcher.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-window-app]');
+    if (!button) return;
+    if (button.dataset.windowApp === 'power') {
+      closePanel();
+      document.getElementById('powerButton')?.click();
+      return;
+    }
+    showView(button.dataset.windowApp);
+    if (button.dataset.windowApp === 'timer') resetTimer();
+  });
+  overlay.querySelectorAll('[data-window-app-back]').forEach((button) => button.addEventListener('click', () => showView('')));
+  document.getElementById('storeAppList')?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-store-app]');
+    if (!button) return;
+    const installed = button.dataset.installed === 'true';
+    button.dataset.installed = String(!installed);
+    button.textContent = installed ? 'Install' : 'Installed';
+    button.setAttribute('aria-pressed', String(!installed));
+  });
+  tile.addEventListener('click', openPanel);
+  closeButton.addEventListener('click', closePanel);
+  overlay.addEventListener('click', (event) => { if (event.target === overlay) closePanel(); });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && overlay.classList.contains('is-open')) closePanel();
+  });
+}
+
+function initScrollControls() {
+  document.getElementById('scrollUp')?.addEventListener('click', () => window.scrollBy({ top: -Math.max(300, window.innerHeight * 0.75), behavior: 'smooth' }));
+  document.getElementById('scrollDown')?.addEventListener('click', () => window.scrollBy({ top: Math.max(300, window.innerHeight * 0.75), behavior: 'smooth' }));
+}
+
 function initImageLightbox() {
   const lightbox = document.getElementById('lightbox');
   const lightboxImage = document.getElementById('lightboxImage');
@@ -912,6 +1066,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initTerminalPanel();
   initFileTabs();
   initPowerMenu();
+  initWindowApps();
+  initScrollControls();
   initImageLightbox();
   setInterval(updateClock, 30000);
 });
