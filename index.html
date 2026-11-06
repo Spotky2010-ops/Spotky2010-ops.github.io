@@ -19,7 +19,7 @@
         <div class="brand-wrap">
           <div class="brand-mark">W</div>
           <div>
-            <div class="app-label">Window 12.2.1 - The Minor Update.</div>
+            <div class="app-label">Window 12.2.2 - The Number Guessing Update.</div>
             <div class="brand-subtitle">Home</div>
           </div>
         </div>
@@ -498,6 +498,14 @@
                 </div>
 
                 <div class="settings-group settings-group-stack">
+                  <label class="settings-label" for="brightnessControl">Brightness</label>
+                  <div class="brightness-control">
+                    <input id="brightnessControl" type="range" min="50" max="100" value="100" aria-describedby="brightnessValue" />
+                    <output id="brightnessValue" for="brightnessControl">100%</output>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group-stack">
                   <label class="settings-label">App font</label>
                   <div class="font-options" role="group" aria-label="App font chooser">
                     <button class="font-option is-selected" type="button" data-font="default">Default</button>
@@ -875,6 +883,16 @@
                 <span class="game-choice-title">Idle Garden</span>
                 <span class="game-choice-description">Grow petals and add self-watering plots.</span>
               </button>
+              <button class="game-choice" id="reactionTile" type="button">
+                <span class="game-choice-icon game-choice-memory" aria-hidden="true">⚡</span>
+                <span class="game-choice-title">Reaction Test</span>
+                <span class="game-choice-description">Wait for the signal, then react as fast as you can.</span>
+              </button>
+              <button class="game-choice" id="numberGuessTile" type="button">
+                <span class="game-choice-icon game-choice-snake" aria-hidden="true">?</span>
+                <span class="game-choice-title">Number Guess</span>
+                <span class="game-choice-description">Find the hidden number from 1 to 100.</span>
+              </button>
             </div>
           </div>
 
@@ -993,6 +1011,33 @@
               <p class="utility-status" id="gardenMessage" aria-live="polite">Grow a flower to begin.</p>
             </div>
           </section>
+
+          <section class="game-view" id="reactionView" aria-label="Reaction Test game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn">Reaction Test</span>
+            </div>
+            <div class="reaction-game">
+              <p id="reactionMessage" aria-live="polite">Press start when you're ready.</p>
+              <button class="action-btn primary" id="reactionStart" type="button">Start test</button>
+            </div>
+          </section>
+
+          <section class="game-view" id="numberGuessView" aria-label="Number Guess game" hidden>
+            <div class="game-view-heading">
+              <button class="game-back" type="button" data-game-back>← Games</button>
+              <span class="game-turn">Number Guess</span>
+            </div>
+            <form class="number-guess-game" id="numberGuessForm">
+              <label for="numberGuessInput">Your guess</label>
+              <div class="number-guess-controls">
+                <input id="numberGuessInput" type="number" min="1" max="100" inputmode="numeric" required />
+                <button class="action-btn primary" type="submit">Guess</button>
+              </div>
+              <p id="numberGuessMessage" aria-live="polite">I picked a number from 1 to 100.</p>
+              <button class="action-btn secondary" id="numberGuessRestart" type="button">New number</button>
+            </form>
+          </section>
         </div>
       </section>
     </div>
@@ -1018,6 +1063,10 @@
             <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🔘</span><h3>Click Counter</h3><button class="toy-action" type="button" data-toy="counter">Click</button><p class="toy-result" data-toy-result="counter" aria-live="polite">0 clicks</p></article>
             <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎭</span><h3>Mood Mixer</h3><button class="toy-action" type="button" data-toy="mood">Mix a mood</button><p class="toy-result" data-toy-result="mood" aria-live="polite">See what turns up</p></article>
             <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎯</span><h3>Number Orbit</h3><button class="toy-action" type="button" data-toy="number">Pick a number</button><p class="toy-result" data-toy-result="number" aria-live="polite">Choose from 1 to 100</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">🎮</span><h3>RPS Battle</h3><button class="toy-action" type="button" data-toy="rps">Play a round</button><p class="toy-result" data-toy-result="rps" aria-live="polite">Rock, paper, or scissors?</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">✨</span><h3>Compliment</h3><button class="toy-action" type="button" data-toy="compliment">Get a compliment</button><p class="toy-result" data-toy-result="compliment" aria-live="polite">A kind word is waiting</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">😀</span><h3>Emoji Surprise</h3><button class="toy-action" type="button" data-toy="emoji">Pick an emoji</button><p class="toy-result" data-toy-result="emoji" aria-live="polite">What will it be?</p></article>
+            <article class="toy-choice"><span class="toy-icon" aria-hidden="true">➗</span><h3>Quick Math</h3><button class="toy-action" type="button" data-toy="math">Make a problem</button><p class="toy-result" data-toy-result="math" aria-live="polite">Ready for a tiny challenge?</p></article>
           </div>
         </div>
       </section>
