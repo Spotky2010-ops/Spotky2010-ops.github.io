@@ -115,7 +115,7 @@ function addRandomTile() {
   const emptyCells = getEmptyCells();
   if (!emptyCells.length) return false;
   const nextCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-  board[nextCell.row][nextCell.col] = Math.random() < 0.9 ? 2 : 4;
+  board[nextCell.row][nextCell.col] = Math.random() < 0.9 ? 2 : 4 : 8 : 16: 32;
   return true;
 }
 
