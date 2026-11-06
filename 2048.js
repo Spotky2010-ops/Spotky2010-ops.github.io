@@ -16,6 +16,8 @@ const photoMemoryView = document.getElementById('photoMemoryView');
 const puzzleView = document.getElementById('puzzleView');
 const cookieClickerView = document.getElementById('cookieClickerView');
 const idleGardenView = document.getElementById('idleGardenView');
+const reactionView = document.getElementById('reactionView');
+const numberGuessView = document.getElementById('numberGuessView');
 const ticTacToeButton = document.getElementById('ticTacToeTile');
 const ticTacToeBoard = document.getElementById('ticTacToeBoard');
 const ticTacToeMessage = document.getElementById('ticTacToeMessage');
@@ -63,6 +65,10 @@ let plotCount = 0;
 let plotCost = 15;
 let bubbleCount = 0;
 let clickCount = 0;
+let reactionTimer = null;
+let reactionStartedAt = 0;
+let numberToGuess = 0;
+let numberGuessCount = 0;
 
 function showGameView(gameName) {
   if (!picker) return;
@@ -76,7 +82,9 @@ function showGameView(gameName) {
     'photo-memory': 'photoMemoryView',
     puzzle: 'puzzleView',
     'cookie-clicker': 'cookieClickerView',
-    'idle-garden': 'idleGardenView'
+    'idle-garden': 'idleGardenView',
+    reaction: 'reactionView',
+    'number-guess': 'numberGuessView'
   };
   document.querySelectorAll('#game2048Overlay .game-view').forEach((view) => {
     view.hidden = view.id !== gameViewIds[gameName];
@@ -629,7 +637,22 @@ function initToysPanel() {
       magic: () => ['Yes, definitely.', 'Ask again soon.', 'The outlook is bright.', 'Not today.', 'Trust your instincts.'][Math.floor(Math.random() * 5)],
       spin: () => 'Wheee!',
       mood: () => ['Curious', 'Focused', 'Playful', 'Calm', 'Bold', 'Dreamy'][Math.floor(Math.random() * 6)],
-      number: () => `Your number is ${Math.floor(Math.random() * 100) + 1}`
+      number: () => `Your number is ${Math.floor(Math.random() * 100) + 1}`,
+      rps: () => {
+        const moves = ['Rock', 'Paper', 'Scissors'];
+        const player = moves[Math.floor(Math.random() * moves.length)];
+        const opponent = moves[Math.floor(Math.random() * moves.length)];
+        const outcome = player === opponent ? 'It\'s a tie' :
+          (moves[(moves.indexOf(opponent) + 1) % moves.length] === player ? 'You win' : 'You lose');
+        return `${player} vs ${opponent}. ${outcome}!`;
+      },
+      compliment: () => ['You bring great energy.', 'Your curiosity is a strength.', 'You make things better.', 'You have a knack for bright ideas.'][Math.floor(Math.random() * 4)],
+      emoji: () => ['🌈', '🦋', '🍉', '🚀', '🌻', '🎈', '🐙', '⭐'][Math.floor(Math.random() * 8)],
+      math: () => {
+        const left = Math.floor(Math.random() * 12) + 1;
+        const right = Math.floor(Math.random() * 12) + 1;
+        return `${left} + ${right} = ${left + right}`;
+      }
     };
     if (button.dataset.toy === 'bubble') {
       bubbleCount += 1;
@@ -699,11 +722,68 @@ function attachControls() {
     startIncrementalGame('idle-garden');
   });
 
+  document.getElementById('reactionTile')?.addEventListener('click', () => {
+    showGameView('reaction');
+    document.getElementById('reactionMessage').textContent = 'Press start when you\'re ready.';
+    document.getElementById('reactionStart').textContent = 'Start test';
+    document.getElementById('reactionStart').disabled = false;
+    reactionStartedAt = 0;
+    window.clearTimeout(reactionTimer);
+    reactionTimer = null;
+  });
+
+  document.getElementById('numberGuessTile')?.addEventListener('click', () => {
+    showGameView('number-guess');
+    startNumberGuess();
+  });
+
+  document.getElementById('reactionStart')?.addEventListener('click', (event) => {
+    const button = event.currentTarget;
+    const message = document.getElementById('reactionMessage');
+    if (reactionStartedAt) {
+      message.textContent = `Your reaction time: ${Math.round(performance.now() - reactionStartedAt)} ms.`;
+      reactionStartedAt = 0;
+      button.textContent = 'Try again';
+      return;
+    }
+    if (reactionTimer) {
+      window.clearTimeout(reactionTimer);
+      reactionTimer = null;
+      button.disabled = false;
+      button.textContent = 'Try again';
+      message.textContent = 'Too soon! Press try again when you\'re ready.';
+      return;
+    }
+    message.textContent = 'Wait for it...';
+    reactionTimer = window.setTimeout(() => {
+      reactionTimer = null;
+      reactionStartedAt = performance.now();
+      button.disabled = false;
+      button.textContent = 'Click now!';
+      message.textContent = 'Now!';
+    }, 1200 + Math.random() * 2200);
+  });
+
+  document.getElementById('numberGuessForm')?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const input = document.getElementById('numberGuessInput');
+    const guess = Number(input.value);
+    numberGuessCount += 1;
+    const message = guess === numberToGuess ? `Correct! You got it in ${numberGuessCount} guesses.` :
+      guess < numberToGuess ? 'Too low. Try a higher number.' : 'Too high. Try a lower number.';
+    document.getElementById('numberGuessMessage').textContent = message;
+    if (guess === numberToGuess) input.disabled = true;
+  });
+  document.getElementById('numberGuessRestart')?.addEventListener('click', startNumberGuess);
+
   document.querySelectorAll('[data-game-back]').forEach((button) => {
     button.addEventListener('click', () => {
       stopSnake();
       window.clearTimeout(memoryTimer);
       window.clearTimeout(photoMemoryTimer);
+      window.clearTimeout(reactionTimer);
+      reactionTimer = null;
+      reactionStartedAt = 0;
       window.clearInterval(incrementalTimer);
       activeGame = null;
       picker.hidden = false;
@@ -827,6 +907,15 @@ function attachControls() {
       closeGamePanel();
     }
   });
+}
+
+function startNumberGuess() {
+  numberToGuess = Math.floor(Math.random() * 100) + 1;
+  numberGuessCount = 0;
+  document.getElementById('numberGuessInput').value = '';
+  document.getElementById('numberGuessInput').disabled = false;
+  document.getElementById('numberGuessMessage').textContent = 'I picked a number from 1 to 100.';
+  document.getElementById('numberGuessInput').focus();
 }
 
 function init2048Game() {
