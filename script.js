@@ -435,6 +435,21 @@ function initSettingsPanel() {
   const closeSettings = document.getElementById('closeSettings');
   const settingsTabs = document.querySelectorAll('.settings-tab');
   const settingsPanes = document.querySelectorAll('.settings-pane');
+  const brightnessControl = document.getElementById('brightnessControl');
+  const brightnessValue = document.getElementById('brightnessValue');
+
+  const applyBrightness = (value) => {
+    const brightness = Math.min(100, Math.max(50, Number(value)));
+    document.body.style.setProperty('--brightness-dim', String((100 - brightness) / 100));
+    if (brightnessValue) brightnessValue.value = `${brightness}%`;
+    localStorage.setItem('spotky-brightness', String(brightness));
+  };
+
+  if (brightnessControl) {
+    brightnessControl.value = localStorage.getItem('spotky-brightness') || '100';
+    applyBrightness(brightnessControl.value);
+    brightnessControl.addEventListener('input', () => applyBrightness(brightnessControl.value));
+  }
 
   const openSettings = () => {
     if (!settingsOverlay) return;
