@@ -114,6 +114,8 @@ body {
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 
+body::before { content:""; position:fixed; inset:0; z-index:20; pointer-events:none; background:#000; opacity:var(--brightness-dim, 0); }
+
 body[data-taskbar="compact"] .dock { padding: 9px 12px; gap: 8px; }
 body[data-taskbar="autohide"] .dock { transform: translateY(calc(100% + 18px)); transition: transform 0.25s ease; }
 body[data-taskbar="autohide"] .desktop-shell:hover .dock,
@@ -358,6 +360,11 @@ body[data-theme="light"] .power-panel { background: rgba(255, 255, 255, calc(var
 .incremental-primary:active { transform:scale(0.94); }
 .garden-primary { border-color:rgba(126,214,156,0.4); background:radial-gradient(circle at 35% 30%, #d7f0a8, #70bb84 72%); }
 .incremental-game > p { margin:0; color:var(--muted); }
+.reaction-game, .number-guess-game { display:grid; justify-items:center; gap:14px; min-height:240px; align-content:center; }
+.reaction-game p, .number-guess-game p { min-height:1.5em; margin:0; color:var(--muted); text-align:center; }
+.number-guess-game label { color:var(--muted); }
+.number-guess-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; }
+.number-guess-controls input { width:120px; padding:8px 10px; border:1px solid var(--stroke-soft); border-radius:9px; background:rgba(255,255,255,0.05); color:var(--text); }
 .toy-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px; }
 .toy-choice { display:grid; align-content:start; justify-items:start; gap:8px; min-width:0; padding:13px; border:1px solid var(--stroke-soft); border-radius:13px; background:rgba(255,255,255,0.035); }
 .toy-choice.has-toy-color { border-color:var(--toy-color); background:color-mix(in srgb, var(--toy-color) 12%, transparent); }
